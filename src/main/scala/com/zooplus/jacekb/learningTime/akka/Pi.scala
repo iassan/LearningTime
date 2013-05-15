@@ -4,6 +4,8 @@ import akka.actor._
 import akka.routing.RoundRobinRouter
 import scala.concurrent.duration._
 import com.zooplus.jacekb.learningTime.akka.Commons.{PiApproximation, Result, Work, Calculate}
+import akka.remote.routing.RemoteRouterConfig
+import com.typesafe.config.ConfigFactory
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,10 +26,10 @@ object Pi extends App {
 		var nrOfResults: Int = _
 		val start: Long = System.currentTimeMillis
 
-		val workerAddresses = Seq(AddressFromURIString("akka://PiSystem@192.168.22.60:1235"))
+		val workerAddresses = Seq(AddressFromURIString("akka://PiSystem@192.168.22.64:2552"))
 
 		val workerRouter = context.actorOf(
-			Props[Worker].withRouter(RoundRobinRouter(nrOfWorkers)), name = "workerRouter")
+			Props[Worker].withRouter(RemoteRouterConfig(RoundRobinRouter(nrOfWorkers), workerAddresses)), name = "workerRouter")
 
 		def receive = {
 			case Calculate ⇒
@@ -56,7 +58,7 @@ object Pi extends App {
 
 	def calculate(nrOfWorkers: Int, nrOfElements: Int, nrOfMessages: Int) {
 		// Create an Akka system
-		val system = ActorSystem("PiSystem")
+		val system = ActorSystem("PiSystem", ConfigFactory.load.getConfig("server"))
 
 		// create the result listener, which will print the result and
 		// shutdown the system

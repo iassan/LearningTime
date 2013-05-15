@@ -1,5 +1,8 @@
 package com.zooplus.jacekb.learningTime.akka
 
+import akka.actor.ActorSystem
+import com.typesafe.config.ConfigFactory
+
 /**
  * Created with IntelliJ IDEA.
  * User: jacek_bilski
@@ -8,4 +11,5 @@ package com.zooplus.jacekb.learningTime.akka
  */
 object Client extends App {
 
+	val system = ActorSystem("PiSystem", ConfigFactory.load.getConfig("client"))
 }

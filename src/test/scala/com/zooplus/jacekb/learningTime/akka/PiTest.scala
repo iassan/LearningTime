@@ -12,6 +12,7 @@ import org.junit.{Ignore, Test}
 class PiTest extends JUnitSuite {
 
 	@Test
+	@Ignore
 	def testPiCalculation() {
 		Pi.calculate(nrOfWorkers = 4, nrOfElements = 10000, nrOfMessages = 10000)
 	}
