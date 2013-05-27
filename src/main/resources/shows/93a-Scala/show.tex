@@ -1,0 +1,139 @@
+\documentclass[xcolor=dvipsnames]{beamer}
+%\usepackage[OT4]{fontenc}
+%\usepackage[utf8]{inputenc}
+%\usepackage[polish]{babel}
+\usepackage{fancyvrb}
+\usepackage{thumbpdf}
+\usepackage{relsize}
+\usepackage{amsmath}
+
+%\usetheme[left]{Marburg}
+%\usetheme{Hannower}
+\useinnertheme[shadow]{rounded}
+\useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
+%\usecolortheme{albatross}
+\usecolortheme{crane}
+%\setbeamercolor{structure}{fg=OliveGreen!50!black}
+%\usecolortheme[named=OliveGreen]{structure}
+\usefonttheme{default}
+\setbeamercovered{transparent}
+\title{Scala -- functional programming for JVM}
+\author{Jacek~Bilski}
+\date{\today}
+\subject{Scala -- functional programming for JVM}
+
+\setbeamertemplate{navigation symbols}
+{
+	\usebeamercolor[fg]{navigation symbols dimmed}
+	{
+		\insertframenumber\,/\,\inserttotalframenumber
+	}
+}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Agenda}
+\tableofcontents[pausesections]
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}
+\frametitle{Scala}
+\begin{itemize}
+\item \href{http://www.scala-lang.org/}{http://www.scala-lang.org/}
+\item Yet another language for JVM
+\item Both object-oriented and functional language
+\item Scala is statically typed, strongly type-inferring
+\end{itemize}
+\end{frame}
+
+\section{Hello world!}
+
+\frame[containsverbatim]{
+\frametitle{Hello World!}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+package com.zooplus.jacekb.learningTime.scala
+
+object Hello {
+	def main(args: Array[String]) = println("Hello World!")
+}
+
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{Hello World explained}
+\begin{itemize}
+\item We define functions with: $def functionName$,
+\item then we add some parameters: $def f(x: Type)$,
+\item then we may (it's necessary only for recursive functions) define returned type: $def f(x: Int): Int$,
+\item then we define functions body: $x * x$ (we can omit parenthesis, because the body is a proper Scala expression).
+\item In total: $def f(x: Int) = x * x$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Other things to notice}
+$def f(x: Int) = x * x$
+\begin{itemize}
+\item No semicolon at the end, we don't need them
+\item no ''return'' keyword, value of last expression is the functions' result.
+\item Hello is an object, not a class. It's a singleton with all methods ''static''. There are no ''static'' methods in Scala, you define a class and object with the same name.
+\end{itemize}
+\end{frame}
+
+
+\section{Theory}
+
+\begin{frame}
+\frametitle{Functional programming}
+\begin{itemize}
+\item Based on lambda calculus, formal system created to support formal studies of computations.
+\item Basic elements are variables, binding and functions.
+\item Functional programming is a paradigm that treats computation as the evaluation of mathematical functions and avoids state and mutable data.
+\item Functions are first-class citizens, can be passed around, even as parameters or results of other functions (higher-order functions).
+\item In pure form it very closely resembles solving mathematical problems.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pure functions}
+\begin{itemize}
+\item Pure functions have no ''side effects'', they don't change anything in memory or do I/O operations.
+\item This means, that pure function called with the same parameters will always return the same result. We may cache it's result.
+\item If there's no data dependency between two pure functions, we can run them in different order and/or in parallel. When smartly used one can use multiple CPUs to fasten computation.
+\item Functions are first-class citizens, can be passed around, even as parameters or results of other functions (higher-order functions).
+\item In pure form it very closely resembles solving mathematical problems.
+\end{itemize}
+\end{frame}
+
+\section{Examples}
+
+% var vs val
+% case classes and pattern matching
+% functions getting and returning functions
+% chaining operations on collections - map/reduce
+% traits and mixins
+% tail recursion
+% defining functions anywhere
+% "anonymous" values
+% val, def and lazy
+
+
+\section{Questions?}
+
+\begin{frame}
+\frametitle{Questions?}
+\begin{center}
+\Huge{?}
+\end{center}
+\end{frame}
+
+
+\end{document}
