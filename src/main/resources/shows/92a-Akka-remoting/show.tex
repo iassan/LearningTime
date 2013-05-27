@@ -1,0 +1,153 @@
+\documentclass[xcolor=dvipsnames]{beamer}
+%\usepackage[OT4]{fontenc}
+%\usepackage[utf8]{inputenc}
+%\usepackage[polish]{babel}
+\usepackage{fancyvrb}
+\usepackage{thumbpdf}
+\usepackage{relsize}
+\usepackage{amsmath}
+
+%\usetheme[left]{Marburg}
+%\usetheme{Hannower}
+\useinnertheme[shadow]{rounded}
+\useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
+%\usecolortheme{albatross}
+\usecolortheme{crane}
+%\setbeamercolor{structure}{fg=OliveGreen!50!black}
+%\usecolortheme[named=OliveGreen]{structure}
+\usefonttheme{default}
+\setbeamercovered{transparent}
+\title{Akka remoting -- actors running on remote machines}
+\author{Jacek~Bilski}
+\date{\today}
+\subject{Akka remoting -- actors running on remote machines}
+
+\setbeamertemplate{navigation symbols}
+{
+	\usebeamercolor[fg]{navigation symbols dimmed}
+	{
+		\insertframenumber\,/\,\inserttotalframenumber
+	}
+}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Agenda}
+\tableofcontents[pausesections]
+\end{frame}
+
+\section{Akka}
+
+\begin{frame}
+\frametitle{Akka -- actors system -- short reminder}
+\begin{itemize}
+\item \href{http://akka.io/}{http://akka.io/}
+\item Implements actors system for Scala \& Java
+\item Actors system -- manages actors hierarchy, creates threads, routes messages, /etc.
+\item Actors -- process messages asynchronously using an event-driven receive loop
+\end{itemize}
+\end{frame}
+
+\section{Problem}
+
+\begin{frame}
+\frametitle{Problem: calculating value of $\pi$}
+Formula:
+\[\sum_{n=0}^\infty \frac{(-1)^n}{2n+1} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \ldots = \frac{\pi}{4}\]
+\end{frame}
+
+\section{Technical problem}
+
+\begin{frame}
+\frametitle{Distributed computation}
+\begin{itemize}
+\item Problem is easily parallelizable,
+\item so we split calculations in chunks and calculate in different actors\ldots
+\item \ldots{}on different computers.
+\end{itemize}
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Master}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2,commandchars=\\\{\}]
+class Master extends Actor {
+
+var pi: BigDecimal = 0
+var nrOfResults: Int = _
+
+\alert{val workerAddresses = Seq(
+		AddressFromURIString("akka://PiSystem@192.168.22.60:2553"),
+		AddressFromURIString("akka://PiSystem@192.168.22.60:2554"))}
+
+val workerRouter = context.actorOf(
+	Props[Worker].withRouter(\alert{RemoteRouterConfig(}
+		RoundRobinRouter(nrOfWorkers)\alert{, workerAddresses)}),
+		name = "workerRouter")
+
+def receive = {
+	case Calculate =>
+		for (i <- 0 until nrOfMessages)
+			workerRouter ! Work(i * nrOfElements, nrOfElements)
+	case Result(value) =>
+		pi += value
+		nrOfResults += 1
+		if (nrOfResults == nrOfMessages) {
+			// Send the result to the listener
+			listener ! PiApproximation(pi)
+			// Stops this actor and all its supervised children
+			context.stop(self)
+		}
+}}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{App}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.63},tabsize=2]
+calculate(nrOfWorkers = 16, nrOfElements = 10000, nrOfMessages = 100000)
+
+def calculate(nrOfWorkers: Int, nrOfElements: Int, nrOfMessages: Int) {
+	// Create an Akka system
+	val system = ActorSystem("PiSystem")
+
+	// create the result listener, which will print the result and
+	// shutdown the system
+	val listener = system.actorOf(Props[Listener], name = "listener")
+
+	// create the master
+	val master = system.actorOf(Props(new Master(
+		nrOfWorkers, nrOfMessages, nrOfElements, listener)),
+		name = "master")
+
+	// start the calculation
+	master ! Calculate
+}
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{Results}
+$\pi = 3.141592652589784499499528724894 \gets$ no wonder :)
+Execution times:\\
+1 worker -- 13275 milliseconds\\
+4 workers -- 4323 milliseconds\\
+8 workers -- 3734 milliseconds\\
+16 workers -- 3612 milliseconds
+\end{frame}
+
+\section{Questions?}
+
+\begin{frame}
+\frametitle{Questions?}
+\begin{center}
+\Huge{?}
+\end{center}
+\end{frame}
+
+
+\end{document}

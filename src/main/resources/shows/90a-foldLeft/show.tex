@@ -1,0 +1,165 @@
+\documentclass[xcolor=dvipsnames]{beamer}
+%\usepackage[OT4]{fontenc}
+%\usepackage[utf8]{inputenc}
+%\usepackage[polish]{babel}
+\usepackage{fancyvrb}
+\usepackage{thumbpdf}
+\usepackage{relsize}
+
+%\usetheme[left]{Marburg}
+%\usetheme{Hannower}
+\useinnertheme[shadow]{rounded}
+\useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
+%\usecolortheme{albatross}
+\usecolortheme{crane}
+%\setbeamercolor{structure}{fg=OliveGreen!50!black}
+%\usecolortheme[named=OliveGreen]{structure}
+\usefonttheme{default}
+\setbeamercovered{transparent}
+\title{Scala -- beauty of foldLeft}
+\author{Jacek~Bilski}
+\date{\today}
+\subject{Scala -- beauty of foldLeft}
+
+\setbeamertemplate{navigation symbols}
+{
+	\usebeamercolor[fg]{navigation symbols dimmed}
+	{
+		\insertframenumber\,/\,\inserttotalframenumber
+	}
+}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Agenda}
+\tableofcontents[pausesections]
+\end{frame}
+
+
+\section{Some introduction}
+
+\begin{frame}
+\frametitle{Scala}
+\begin{itemize}
+\item \href{http://www.scala-lang.org/}{http://www.scala-lang.org/}
+\item General purpose programming language
+\item Runs on JVM
+\item Object oriented and functional at the same time
+\item Type-safe
+\item Reason: there's so much more that Java in the World,
+\item \ldots{}and I feel functional programming is the future
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Project Euler}
+\begin{itemize}
+\item \href{http://projecteuler.net/}{http://projecteuler.net/}
+\item Solving real mathematical or algorithmic problems
+\item $>=$425 problems already
+\item One new every week
+\item Reason: I want to be a better programmer
+\item ...and it's fun!
+\end{itemize}
+\end{frame}
+
+\section{Problem}
+
+\begin{frame}
+\frametitle{Problem 24 -- Lexicographic permutations}
+A permutation is an ordered arrangement of objects. For example, 3124 is one possible permutation of the digits 1, 2, 3 and 4. If all of the permutations are listed numerically or alphabetically, we call it lexicographic order. The lexicographic permutations of 0, 1 and 2 are:
+
+012   021   102   120   201   210
+
+What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?
+\end{frame}
+
+\section{Solution}
+
+\frame[containsverbatim]{
+\frametitle{Quick and dirty}
+\begin{Verbatim}[obeytabs=true]
+val digits = List(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+val permutationNumber = 1000000
+digits.permutations.toList(permutationNumber - 1)
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{Problem: number vs List}
+What we got:\\
+$List[Int]$\\
+What we need:\\
+$scala.math.BigInt$
+\end{frame}
+
+\begin{frame}
+\frametitle{Solution - foldLeft}
+$def$ $foldLeft[B](z: B)(f: (B, A) \Rightarrow B): B$\\
+Applies a binary operator to a start value and all elements of this list, going left to right.
+\begin{itemize}
+\item[B] the result type of the binary operator.
+\item[z] the start value.
+\item[returns]{the result of inserting f between consecutive elements of this list, going left to right with the start value z on the left:\\
+$f(\ldots{}f(z, x_1), x_2, \ldots, x_n)$\\
+where $x_1, \ldots, x_n$ are the elements of this list.}
+\end{itemize}
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Quick and dirty -- solution}
+\begin{Verbatim}[obeytabs=true]
+val digits = List(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+val permutationNumber = 1000000
+val permutation = digits.permutations.
+	toList(permutationNumber - 1)
+permutation.foldLeft(BigInt(0))(10 * _ + _)
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{foldLeft explained}
+\begin{Verbatim}[obeytabs=true]
+def f(b: BigInt, a: Int): BigInt = b + a
+permutation.foldLeft(BigInt(0))(f)
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{''Proper'' solution (I think\ldots)}
+\begin{Verbatim}[obeytabs=true,fontsize=\relsize{-3}]
+def howManyPermutations(elements: Number): Number = factorial(elements)
+def generateNthPermutation(elements: List[Int], permNumber: Number): List[Int] = {
+  if (elements.isEmpty) {
+    Nil
+  } else {
+    if (elements.size == 1) {
+      List(elements.head)
+    } else {
+      val x = howManyPermutations(elements.size - 1)
+      val elementAtCurrentPosition = elements((permNumber / x).toInt)
+      elementAtCurrentPosition :: generateNthPermutation(
+        elements.filter(_ != elementAtCurrentPosition), permNumber % x)
+    }
+  }
+}
+generateNthPermutation(digits, permutationNumber - 1).foldLeft(BigInt(0))(10 * _ + _)
+\end{Verbatim}
+}
+
+\section{Questions?}
+
+\begin{frame}
+\frametitle{Questions?}
+\begin{center}
+\Huge{?}
+\end{center}
+\end{frame}
+
+
+\end{document}

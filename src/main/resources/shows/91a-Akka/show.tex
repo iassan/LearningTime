@@ -1,0 +1,201 @@
+\documentclass[xcolor=dvipsnames]{beamer}
+%\usepackage[OT4]{fontenc}
+%\usepackage[utf8]{inputenc}
+%\usepackage[polish]{babel}
+\usepackage{fancyvrb}
+\usepackage{thumbpdf}
+\usepackage{relsize}
+\usepackage{amsmath}
+
+%\usetheme[left]{Marburg}
+%\usetheme{Hannower}
+\useinnertheme[shadow]{rounded}
+\useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
+%\usecolortheme{albatross}
+\usecolortheme{crane}
+%\setbeamercolor{structure}{fg=OliveGreen!50!black}
+%\usecolortheme[named=OliveGreen]{structure}
+\usefonttheme{default}
+\setbeamercovered{transparent}
+\title{Akka -- actors system for Scala \& Java}
+\author{Jacek~Bilski}
+\date{\today}
+\subject{Akka -- actors system for Scala \& Java}
+
+\setbeamertemplate{navigation symbols}
+{
+	\usebeamercolor[fg]{navigation symbols dimmed}
+	{
+		\insertframenumber\,/\,\inserttotalframenumber
+	}
+}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Agenda}
+\tableofcontents[pausesections]
+\end{frame}
+
+\section{Akka}
+
+\begin{frame}
+\frametitle{Akka}
+\begin{itemize}
+\item \href{http://akka.io/}{http://akka.io/}
+\item Implements actors system for Scala \& Java
+\item Part of Scala right now (well, almost)
+\end{itemize}
+\end{frame}
+
+
+\section{Actors system}
+
+\begin{frame}
+\frametitle{Actors system}
+\begin{itemize}
+\item Hierarchy of actors
+\item Manages actors, creates threads, routes messages, /etc.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Actors}
+\begin{itemize}
+\item Very lightweight concurrent entities
+\item Process messages asynchronously using an event-driven receive loop
+\item ''Little'' SOA
+\item No need to worry about threads, locks, /etc.
+\end{itemize}
+\end{frame}
+
+\section{Problem}
+
+\begin{frame}
+\frametitle{Problem: calculating value of $\pi$}
+Formula:
+%\begin{equation}
+\[\sum_{n=0}^\infty \frac{(-1)^n}{2n+1} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \ldots = \frac{\pi}{4}\]
+%\end{equation}
+\end{frame}
+
+\section{Solution}
+
+\begin{frame}
+\frametitle{Divide and conquer}
+\begin{itemize}
+\item Problem is easily parallelizable,\ldots
+\item \ldots{}so we split calculations in chunks and calculate in different actors.
+\end{itemize}
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Worker}
+\begin{Verbatim}[obeytabs=true,fontsize=\relsize{-2},tabsize=2]
+class Worker extends Actor {
+def calculatePiFor(start: Int, nrOfElements: Int): BigDecimal = {
+	var acc = 0.0
+	for (i <- start until (start + nrOfElements))
+		acc += 4.0 * (1 - (i % 2) * 2) / (2 * i + 1)
+	acc
+}
+
+def receive = {
+	case Work(start, nrOfElements) =>
+		// perform the work
+		sender ! Result(calculatePiFor(start, nrOfElements))
+}}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Master}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+class Master extends Actor {
+
+var pi: BigDecimal = 0
+var nrOfResults: Int = _
+
+val workerRouter = context.actorOf(
+	Props[Worker].withRouter(RoundRobinRouter(nrOfWorkers)),
+		name = "workerRouter")
+
+def receive = {
+	case Calculate =>
+		for (i <- 0 until nrOfMessages)
+			workerRouter ! Work(i * nrOfElements, nrOfElements)
+	case Result(value) =>
+		pi += value
+		nrOfResults += 1
+		if (nrOfResults == nrOfMessages) {
+			// Send the result to the listener
+			listener ! PiApproximation(pi)
+			// Stops this actor and all its supervised children
+			context.stop(self)
+		}
+}}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Listener}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
+class Listener extends Actor {
+def receive = {
+	case PiApproximation(pi, duration) =>
+		println("\n\tPi approximation: \t\t%s".format(pi))
+		println("\n\tCalculation time: \t%s".format(duration))
+		context.system.shutdown()
+}}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{App}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.63},tabsize=2]
+calculate(nrOfWorkers = 16, nrOfElements = 10000, nrOfMessages = 100000)
+
+def calculate(nrOfWorkers: Int, nrOfElements: Int, nrOfMessages: Int) {
+	// Create an Akka system
+	val system = ActorSystem("PiSystem")
+
+	// create the result listener, which will print the result and
+	// shutdown the system
+	val listener = system.actorOf(Props[Listener], name = "listener")
+
+	// create the master
+	val master = system.actorOf(Props(new Master(
+		nrOfWorkers, nrOfMessages, nrOfElements, listener)),
+		name = "master")
+
+	// start the calculation
+	master ! Calculate
+}
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{Results}
+$\pi = 3.141592652589784499499528724894 \gets$ no wonder :)
+Execution times:\\
+1 worker -- 13275 milliseconds\\
+4 workers -- 4323 milliseconds\\
+8 workers -- 3734 milliseconds\\
+16 workers -- 3612 milliseconds
+\end{frame}
+
+\section{Questions?}
+
+\begin{frame}
+\frametitle{Questions?}
+\begin{center}
+\Huge{?}
+\end{center}
+\end{frame}
+
+
+\end{document}
