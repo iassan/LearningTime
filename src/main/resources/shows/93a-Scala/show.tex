@@ -63,28 +63,28 @@ package com.zooplus.jacekb.learningTime.scala
 object Hello {
 	def main(args: Array[String]) = println("Hello World!")
 }
-
 \end{Verbatim}
 }
 
 \begin{frame}
 \frametitle{Hello World explained}
+$def\:f(x:\:Int) = x * x$
 \begin{itemize}
-\item We define functions with: $def functionName$,
-\item then we add some parameters: $def f(x: Type)$,
-\item then we may (it's necessary only for recursive functions) define returned type: $def f(x: Int): Int$,
-\item then we define functions body: $x * x$ (we can omit parenthesis, because the body is a proper Scala expression).
-\item In total: $def f(x: Int) = x * x$.
+\item One method defined (Scalas' equivalent of Javas' $main$ method), which just prints the usual ''Hello World!''.
+\item No semicolon at the end, we don't need them.
+\item no ''return'' keyword, value of last expression is the functions' result.
+\item Hello is an object, not a class. It's a singleton with all methods ''static''. There are no ''static'' methods in Scala, you define a class and object with the same name.
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Other things to notice}
-$def f(x: Int) = x * x$
+\frametitle{Hello World explained -- defining functions}
 \begin{itemize}
-\item No semicolon at the end, we don't need them
-\item no ''return'' keyword, value of last expression is the functions' result.
-\item Hello is an object, not a class. It's a singleton with all methods ''static''. There are no ''static'' methods in Scala, you define a class and object with the same name.
+\item We define functions with: $def\:functionName$,
+\item then we add some parameters: $def\:f(x:\:Type)$,
+\item then we may (it's necessary only for recursive functions) define returned type: $def\:f(x:\:Int):\:Int$,
+\item then we define functions body: $x * x$ (we can omit parenthesis, because the body is a proper Scala expression).
+\item In total: $def\:f(x:\:Int) = x * x$.
 \end{itemize}
 \end{frame}
 
@@ -115,15 +115,150 @@ $def f(x: Int) = x * x$
 
 \section{Examples}
 
-% var vs val
-% case classes and pattern matching
-% functions getting and returning functions
+\frame[containsverbatim]{
+\frametitle{''Variables''}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object Hello {
+	def main(args: Array[String]) = println(f(4))
+
+	def f(x: Int) {
+		var y = x - 1	// mutable, can reassign
+		y = 2 * y	// allowed, because it's var
+		val z = x + 1	// immutable, not re-assignable, constant
+		z = 2 * z	// compilation error
+		x + y + z
+	}
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Pattern Matching -- switch on steroids}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object PatternMatching {
+	case class A(s: String)
+	case class B(i: Int)
+
+	def main(args: Array[String]) {
+		f(A("abc"))	// "Got string: abc"
+		f(B(3))		// "Got int: 3"
+		f(1.5)		// Exception in thread "main"
+		// scala.MatchError: 1.5 (of class java.lang.Double)
+	}
+
+	def f(x: Any) {	// Any is the root of the Scala class hierarchy
+		x match {
+			case A(s) => println("Got string: " + s)
+			case B(i) => println("Got int: " + i)
+		}
+	}
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Higher order functions}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object HigherOrderFunctions {
+
+	def main(args: Array[String]) = f(3)
+
+	def f(x: Int) = {
+		// legal, function is an object
+		def h(x: Int) = 2 * x
+
+		// 0-parameter function returning function
+		def u: Int => Int = h
+
+		// passing function to function
+		// u is at first evaluated into another function
+		g(x, u)
+	}
+
+	// t is a function getting an Int and returning an Int
+	def g(x: Int, t: Int => Int) = t(x)
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Tail recursion}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.6},tabsize=2]
+object TailRecursion {
+
+	def main(args: Array[String]) {
+		println("g: " + g(1000000000))	// "g: 1000000000"
+		println("f: " + f(1000000000))	// StackOverflowError
+	}
+
+	def f(x: Int): Int = {
+		if (x > 0) {
+			// return call to itself plus one additional operation
+			1 + f(x - 1)
+		} else {
+			0
+		}
+	}
+
+	def g(x: Int): Int = {
+		def t(x: Int, acc: Int): Int = {
+			if (x > 0) {
+				// return call to itself without any other operations
+				t(x - 1, acc + 1)
+			} else {
+				acc
+			}
+		}
+		t(x, 0)
+	}
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Quiz -- val, def and lazy}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.6},tabsize=2]
+object ValDefAndLazy {
+
+	def main(args: Array[String]) = {
+		println("a")
+		println("x: " + x)
+		println("y: " + y)
+		println("z: " + z)
+		println("x: " + x)
+		println("y: " + y)
+		println("z: " + z)
+	}
+
+	val x = {
+		println("Calculating x")
+		1000
+	}
+
+	def y = {
+		println("Calculating y")
+		2000
+	}
+
+	lazy val z = {
+		println("Calculating z")
+		3000
+	}
+}
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{Answer:}
+xa1y2z31y23b
+\end{frame}
+
+
 % chaining operations on collections - map/reduce
 % traits and mixins
-% tail recursion
-% defining functions anywhere
-% "anonymous" values
-% val, def and lazy
+% "anonymous" (_) values
+% syntax without . - DSLs
+% Streams ?
 
 
 \section{Questions?}
