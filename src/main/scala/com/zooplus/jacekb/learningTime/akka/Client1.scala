@@ -9,7 +9,7 @@ import com.typesafe.config.ConfigFactory
  * Date: 15/05/13
  * Time: 08:29
  */
-object Client extends App {
+object Client1 extends App {
 
-	val system = ActorSystem("PiSystem", ConfigFactory.load.getConfig("client"))
+	val system = ActorSystem("PiSystem", ConfigFactory.load.getConfig("client1"))
 }

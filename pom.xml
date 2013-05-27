@@ -11,8 +11,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<scala.version>2.10.1</scala.version>
-		<scalatest.scala.version>2.10</scalatest.scala.version>
-		<scalatest.version>1.9.1</scalatest.version>
 		<akka.version>2.1.2</akka.version>
 	</properties>
 
@@ -50,18 +48,6 @@
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-library</artifactId>
 			<version>${scala.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scalatest</groupId>
-			<artifactId>scalatest_${scalatest.scala.version}</artifactId>
-			<version>${scalatest.version}</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>

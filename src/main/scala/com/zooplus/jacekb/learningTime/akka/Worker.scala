@@ -12,8 +12,9 @@ import com.zooplus.jacekb.learningTime.akka.Commons.{Work, Result}
 
 class Worker extends Actor {
 
+	println("Creating worker")
+
 	def calculatePiFor(start: Int, nrOfElements: Int): BigDecimal = {
-		println("Starting calculations")
 		var acc = 0.0
 		for (i ← start until (start + nrOfElements))
 			acc += 4.0 * (1 - (i % 2) * 2) / (2 * i + 1)

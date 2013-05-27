@@ -26,7 +26,7 @@ object Pi extends App {
 		var nrOfResults: Int = _
 		val start: Long = System.currentTimeMillis
 
-		val workerAddresses = Seq(AddressFromURIString("akka://PiSystem@192.168.22.64:2552"))
+		val workerAddresses = Seq(AddressFromURIString("akka://PiSystem@192.168.22.60:2553"), AddressFromURIString("akka://PiSystem@192.168.22.60:2554"))
 
 		val workerRouter = context.actorOf(
 			Props[Worker].withRouter(RemoteRouterConfig(RoundRobinRouter(nrOfWorkers), workerAddresses)), name = "workerRouter")
