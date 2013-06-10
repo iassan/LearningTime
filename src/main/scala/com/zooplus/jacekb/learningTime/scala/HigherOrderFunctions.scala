@@ -7,8 +7,9 @@ package com.zooplus.jacekb.learningTime.scala
  * Time: 16:02
  */
 object HigherOrderFunctions {
-
-	def main(args: Array[String]) = f(3)
+	def main(args: Array[String]) {
+		println(f(3)) // 6
+	}
 
 	def f(x: Int) = {
 		// legal, function is an object

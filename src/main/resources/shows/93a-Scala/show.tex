@@ -61,7 +61,9 @@
 package com.zooplus.jacekb.learningTime.scala
 
 object Hello {
-	def main(args: Array[String]) = println("Hello World!")
+	def main(args: Array[String]) {
+		println("Hello World!")
+	}
 }
 \end{Verbatim}
 }
@@ -70,9 +72,11 @@ object Hello {
 \frametitle{Hello World explained}
 $def\:f(x:\:Int) = x * x$
 \begin{itemize}
-\item One method defined (Scalas' equivalent of Javas' $main$ method), which just prints the usual ''Hello World!''.
-\item No semicolon at the end, we don't need them.
-\item no ''return'' keyword, value of last expression is the functions' result.
+\item One method defined (Scala's equivalent of Java's $main$ method), which just prints the usual ''Hello World!''.
+\item No semicolon at the end, we rarely need them.
+\item No ''return'' keyword, value of last expression is the functions' result.
+\item Variables and parameters are defined in a different way that in Java: $name:\:Type$
+\item Generics are using square brackets ($[]$) rather than lesser/greater than ($<>$)
 \item Hello is an object, not a class. It's a singleton with all methods ''static''. There are no ''static'' methods in Scala, you define a class and object with the same name.
 \end{itemize}
 \end{frame}
@@ -81,10 +85,11 @@ $def\:f(x:\:Int) = x * x$
 \frametitle{Hello World explained -- defining functions}
 \begin{itemize}
 \item We define functions with: $def\:functionName$,
-\item then we add some parameters: $def\:f(x:\:Type)$,
+\item then we add some parameters: $def\:f(x:\:Int, y:\:String)$,
 \item then we may (it's necessary only for recursive functions) define returned type: $def\:f(x:\:Int):\:Int$,
 \item then we define functions body: $x * x$ (we can omit parenthesis, because the body is a proper Scala expression).
 \item In total: $def\:f(x:\:Int) = x * x$.
+\item When function doesn't take parameters, we can skip the parenthesis completely: $def\:f = 3$
 \end{itemize}
 \end{frame}
 
@@ -95,7 +100,7 @@ $def\:f(x:\:Int) = x * x$
 \frametitle{Functional programming}
 \begin{itemize}
 \item Based on lambda calculus, formal system created to support formal studies of computations.
-\item Basic elements are variables, binding and functions.
+\item Basic elements are variables, bindings and functions.
 \item Functional programming is a paradigm that treats computation as the evaluation of mathematical functions and avoids state and mutable data.
 \item Functions are first-class citizens, can be passed around, even as parameters or results of other functions (higher-order functions).
 \item In pure form it very closely resembles solving mathematical problems.
@@ -108,8 +113,6 @@ $def\:f(x:\:Int) = x * x$
 \item Pure functions have no ''side effects'', they don't change anything in memory or do I/O operations.
 \item This means, that pure function called with the same parameters will always return the same result. We may cache it's result.
 \item If there's no data dependency between two pure functions, we can run them in different order and/or in parallel. When smartly used one can use multiple CPUs to fasten computation.
-\item Functions are first-class citizens, can be passed around, even as parameters or results of other functions (higher-order functions).
-\item In pure form it very closely resembles solving mathematical problems.
 \end{itemize}
 \end{frame}
 
@@ -136,17 +139,19 @@ object Hello {
 \frametitle{Pattern Matching -- switch on steroids}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object PatternMatching {
-	case class A(s: String)
-	case class B(i: Int)
-
 	def main(args: Array[String]) {
-		f(A("abc"))	// "Got string: abc"
-		f(B(3))		// "Got int: 3"
-		f(1.5)		// Exception in thread "main"
+		f(A("abc")) // "Got string: abc"
+		f(B(3)) // "Got int: 3"
+		f(1.5) // Exception in thread "main"
 		// scala.MatchError: 1.5 (of class java.lang.Double)
 	}
 
-	def f(x: Any) {	// Any is the root of the Scala class hierarchy
+	case class A(s: String)
+
+	case class B(i: Int)
+
+	def f(x: Any) {
+		// Any is the root of the Scala class hierarchy
 		x match {
 			case A(s) => println("Got string: " + s)
 			case B(i) => println("Got int: " + i)
@@ -160,8 +165,9 @@ object PatternMatching {
 \frametitle{Higher order functions}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object HigherOrderFunctions {
-
-	def main(args: Array[String]) = f(3)
+	def main(args: Array[String]) {
+		println(f(3))	// 6
+	}
 
 	def f(x: Int) = {
 		// legal, function is an object
@@ -182,10 +188,189 @@ object HigherOrderFunctions {
 }
 
 \frame[containsverbatim]{
+\frametitle{Traits}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object Traits {
+	def main(args: Array[String]) {
+		C.a()
+		C.b()
+	}
+
+	class A {
+		def a() {
+			println("a")
+		}
+	}
+
+	trait B {
+		def b() {
+			println("b")
+		}
+	}
+
+	object C extends A with B
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Infix operators}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object Infix {
+	def main(args: Array[String]) {
+		println(calculate add 2 to 2)	// 4
+	}
+
+	class MathOperations {
+		var value: Int = 0
+
+		def add(x: Int): MathOperations = {
+			value = x
+			this
+		}
+
+		def to(x: Int): Int = {
+			value = value + x
+			value
+		}
+	}
+
+	def calculate: MathOperations = new MathOperations
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Quiz -- val, def and lazy}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.6},tabsize=2]
+object ValDefAndLazy {
+	def main(args: Array[String]) = {
+		print("a")
+		print(x)
+		print(y)
+		print(z)
+		print(x)
+		print(y)
+		print(z)
+		println("b")
+	}
+
+	val x = {
+		print("x")
+		1
+	}
+
+	def y = {
+		print("y")
+		2
+	}
+
+	lazy val z = {
+		print("z")
+		3
+	}
+}
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{Answer:}
+xa1y2z31y23b
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Infinite structures -- Streams}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object Streams {
+	def main(args: Array[String]) {
+		println(fibbonaci.take(10))	// Stream(0, ?)
+		println(fibbonaci.take(10).toList)
+		// List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)
+	}
+
+	def fibbonaci: Stream[BigInt] = {
+		def f(a: BigInt, b: BigInt): Stream[BigInt] = a #:: f(b, a + b)
+		f(0, 1)
+	}
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Collections operations}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object CollectionOperations {
+	def main(args: Array[String]) {
+		println(Streams.fibbonaci.map(3 * _).
+			filter(_ % 2 != 0).take(10).toList)
+		// List(3, 3, 9, 15, 39, 63, 165, 267, 699, 1131)
+		println(Streams.fibbonaci.map(m).filter(f).take(10).toList)
+		// List(3, 3, 9, 15, 39, 63, 165, 267, 699, 1131)
+		println(Streams.fibbonaci.take(10).foldLeft(BigInt(0))(_ + _))
+		// 88
+	}
+
+	def m(x: BigInt) = 3 * x
+
+	def f(x: BigInt) = x % 2 != 0
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Tuples}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object Tuples {
+	def main(args: Array[String]) {
+		val x = f(1, 2)
+		println(x)	// (1,2)
+		println(x._1)	// 1
+		println(x._2)	// 2
+	}
+
+	def f(x: Int, y: Int): (Int, Int) = (x, y)
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Currying}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object Currying {
+	def main(args: Array[String]) {
+		println(g(2, f(3)))	// 6
+	}
+
+	def f(x: Int)(y: Int) = x * y
+
+	def g(x: Int, h: Int => Int) = h(x)
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Closures}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object Closures {
+	def main(args: Array[String]) {
+		lazy val x = {	// type: Unit
+			print("x")
+		}
+		f(x)	// ax
+	}
+
+	def f(body: => Unit) {
+		print("a")
+		body
+	}
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
 \frametitle{Tail recursion}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.6},tabsize=2]
 object TailRecursion {
-
 	def main(args: Array[String]) {
 		println("g: " + g(1000000000))	// "g: 1000000000"
 		println("f: " + f(1000000000))	// StackOverflowError
@@ -215,50 +400,9 @@ object TailRecursion {
 \end{Verbatim}
 }
 
-\frame[containsverbatim]{
-\frametitle{Quiz -- val, def and lazy}
-\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.6},tabsize=2]
-object ValDefAndLazy {
-
-	def main(args: Array[String]) = {
-		println("a")
-		println("x: " + x)
-		println("y: " + y)
-		println("z: " + z)
-		println("x: " + x)
-		println("y: " + y)
-		println("z: " + z)
-	}
-
-	val x = {
-		println("Calculating x")
-		1000
-	}
-
-	def y = {
-		println("Calculating y")
-		2000
-	}
-
-	lazy val z = {
-		println("Calculating z")
-		3000
-	}
-}
-\end{Verbatim}
-}
-
-\begin{frame}
-\frametitle{Answer:}
-xa1y2z31y23b
-\end{frame}
-
-
-% chaining operations on collections - map/reduce
-% traits and mixins
-% "anonymous" (_) values
-% syntax without . - DSLs
-% Streams ?
+% scala console
+% upper and lower type bounds
+% everything is an expression and return some value	-- this is actually done elsewhere
 
 
 \section{Questions?}

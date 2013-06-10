@@ -7,8 +7,7 @@ package com.zooplus.jacekb.learningTime.scala
  * Time: 16:30
  */
 object ValDefAndLazy {
-
-	def main(args: Array[String]) = {
+	def main(args: Array[String]) {
 		print("a")
 		print(x)
 		print(y)

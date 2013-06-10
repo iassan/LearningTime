@@ -7,17 +7,16 @@ package com.zooplus.jacekb.learningTime.scala
  * Time: 15:34
  */
 object PatternMatching {
-
-	case class A(s: String)
-
-	case class B(i: Int)
-
 	def main(args: Array[String]) {
 		f(A("abc")) // "Got string: abc"
 		f(B(3)) // "Got int: 3"
 		f(1.5) // Exception in thread "main"
 		// scala.MatchError: 1.5 (of class java.lang.Double)
 	}
+
+	case class A(s: String)
+
+	case class B(i: Int)
 
 	def f(x: Any) {
 		// Any is the root of the Scala class hierarchy

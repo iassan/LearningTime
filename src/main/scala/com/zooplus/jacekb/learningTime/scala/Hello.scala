@@ -7,5 +7,7 @@ package com.zooplus.jacekb.learningTime.scala
  * Time: 13:40
  */
 object Hello {
-	def main(args: Array[String]) = println("Hello World!")
+	def main(args: Array[String]) {
+		println("Hello World!")
+	}
 }

@@ -7,7 +7,6 @@ package com.zooplus.jacekb.learningTime.scala
  * Time: 16:13
  */
 object TailRecursion {
-
 	def main(args: Array[String]) {
 		println("g: " + g(1000000000)) // "g: 1000000000"
 		println("f: " + f(1000000000)) // StackOverflowError
