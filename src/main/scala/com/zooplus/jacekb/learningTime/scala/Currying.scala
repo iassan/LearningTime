@@ -8,10 +8,10 @@ package com.zooplus.jacekb.learningTime.scala
  */
 object Currying {
 	def main(args: Array[String]) {
-		println(g(2, f(3))) // 6
+		println(g(2, f(3))) // 7
 	}
 
-	def f(x: Int)(y: Int) = x * y
+	def f(x: Int)(y: Int) = x + 2 * y
 
-	def g(x: Int, h: Int => Int) = h(x)
+	def g(y: Int, h: Int => Int) = h(y)
 }

@@ -11,19 +11,16 @@ object Infix {
 		println(calculate add 2 to 2) // 4
 	}
 
-	class MathOperations {
-		var value: Int = 0
+	class MathOperations(value: Int) {
 
 		def add(x: Int): MathOperations = {
-			value = x
-			this
+			new MathOperations(x)
 		}
 
 		def to(x: Int): Int = {
-			value = value + x
-			value
+			value + x
 		}
 	}
 
-	def calculate: MathOperations = new MathOperations
+	def calculate: MathOperations = new MathOperations(0)
 }

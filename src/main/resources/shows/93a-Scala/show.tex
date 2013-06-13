@@ -17,10 +17,10 @@
 %\usecolortheme[named=OliveGreen]{structure}
 \usefonttheme{default}
 \setbeamercovered{transparent}
-\title{Scala -- functional programming for JVM}
+\title{Scala -- functional programming for JVM in examples}
 \author{Jacek~Bilski}
 \date{\today}
-\subject{Scala -- functional programming for JVM}
+\subject{Scala -- functional programming for JVM in examples}
 
 \setbeamertemplate{navigation symbols}
 {
@@ -70,7 +70,6 @@ object Hello {
 
 \begin{frame}
 \frametitle{Hello World explained}
-$def\:f(x:\:Int) = x * x$
 \begin{itemize}
 \item One method defined (Scala's equivalent of Java's $main$ method), which just prints the usual ''Hello World!''.
 \item No semicolon at the end, we rarely need them.
@@ -102,7 +101,7 @@ $def\:f(x:\:Int) = x * x$
 \item Based on lambda calculus, formal system created to support formal studies of computations.
 \item Basic elements are variables, bindings and functions.
 \item Functional programming is a paradigm that treats computation as the evaluation of mathematical functions and avoids state and mutable data.
-\item Functions are first-class citizens, can be passed around, even as parameters or results of other functions (higher-order functions).
+\item Functions are first-class citizens, can be passed around as parameters or results of other functions (higher-order functions).
 \item In pure form it very closely resembles solving mathematical problems.
 \end{itemize}
 \end{frame}
@@ -218,24 +217,21 @@ object Traits {
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object Infix {
 	def main(args: Array[String]) {
-		println(calculate add 2 to 2)	// 4
+		println(calculate add 2 to 2) // 4
 	}
 
-	class MathOperations {
-		var value: Int = 0
+	class MathOperations(value: Int) {
 
 		def add(x: Int): MathOperations = {
-			value = x
-			this
+			new MathOperations(x)
 		}
 
 		def to(x: Int): Int = {
-			value = value + x
-			value
+			value + x
 		}
 	}
 
-	def calculate: MathOperations = new MathOperations
+	def calculate: MathOperations = new MathOperations(0)
 }
 \end{Verbatim}
 }
@@ -273,19 +269,17 @@ object ValDefAndLazy {
 \end{Verbatim}
 }
 
-\begin{frame}
-\frametitle{Answer:}
-xa1y2z31y23b
-\end{frame}
-
 \frame[containsverbatim]{
 \frametitle{Infinite structures -- Streams}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object Streams {
 	def main(args: Array[String]) {
-		println(fibbonaci.take(10))	// Stream(0, ?)
-		println(fibbonaci.take(10).toList)
+		val s = fibbonaci	// Stream(0, ?)
+		println(s.take(10)) // Stream(0, ?)
+		println(s.take(10).toList)
 		// List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)
+		println(s.take(10))
+		// Stream(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ?)
 	}
 
 	def fibbonaci: Stream[BigInt] = {
@@ -338,12 +332,12 @@ object Tuples {
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object Currying {
 	def main(args: Array[String]) {
-		println(g(2, f(3)))	// 6
+		println(g(2, f(3))) // 7
 	}
 
-	def f(x: Int)(y: Int) = x * y
+	def f(x: Int)(y: Int) = x + 2 * y
 
-	def g(x: Int, h: Int => Int) = h(x)
+	def g(y: Int, h: Int => Int) = h(y)
 }
 \end{Verbatim}
 }

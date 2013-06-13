@@ -8,9 +8,12 @@ package com.zooplus.jacekb.learningTime.scala
  */
 object Streams {
 	def main(args: Array[String]) {
-		println(fibbonaci.take(10)) // Stream(0, ?)
-		println(fibbonaci.take(10).toList)
+		val s = fibbonaci // Stream(0, ?)
+		println(s.take(10)) // Stream(0, ?)
+		println(s.take(10).toList)
 		// List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)
+		println(s.take(10))
+		// Stream(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ?)
 	}
 
 	def fibbonaci: Stream[BigInt] = {
