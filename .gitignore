@@ -1,1 +1,9 @@
 *.iml
+*.pdf
+*.aux
+*.nav
+*.out
+*.snm
+*.log
+*.toc
+*.tpt

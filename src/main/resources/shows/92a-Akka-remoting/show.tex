@@ -74,35 +74,35 @@ Formula:
 
 \frame[containsverbatim]{
 \frametitle{Master}
-\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2,commandchars=\\\{\}]
-class Master extends Actor {
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.6},tabsize=2,commandchars=\\\{\}]
+class Master extends Actor \{
 
 var pi: BigDecimal = 0
 var nrOfResults: Int = _
 
-\alert{val workerAddresses = Seq(
-		AddressFromURIString("akka://PiSystem@192.168.22.60:2553"),
-		AddressFromURIString("akka://PiSystem@192.168.22.60:2554"))}
+\alert{val workerAddresses = Seq(}
+		\alert{AddressFromURIString("akka://PiSystem@192.168.22.60:2553"),}
+		\alert{AddressFromURIString("akka://PiSystem@192.168.22.60:2554"))}
 
 val workerRouter = context.actorOf(
 	Props[Worker].withRouter(\alert{RemoteRouterConfig(}
 		RoundRobinRouter(nrOfWorkers)\alert{, workerAddresses)}),
 		name = "workerRouter")
 
-def receive = {
+def receive = \{
 	case Calculate =>
 		for (i <- 0 until nrOfMessages)
 			workerRouter ! Work(i * nrOfElements, nrOfElements)
 	case Result(value) =>
 		pi += value
 		nrOfResults += 1
-		if (nrOfResults == nrOfMessages) {
+		if (nrOfResults == nrOfMessages) \{
 			// Send the result to the listener
 			listener ! PiApproximation(pi)
 			// Stops this actor and all its supervised children
 			context.stop(self)
-		}
-}}
+		\}
+\}\}
 \end{Verbatim}
 }
 
