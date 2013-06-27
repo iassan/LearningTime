@@ -13,6 +13,38 @@
 \useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
 %\usecolortheme{albatross}
 \usecolortheme{crane}
+
+\definecolor{ZooplusGreen}{RGB}{129,197,46}
+\definecolor{ZooplusBlue}{RGB}{4,6,76}
+
+\setbeamercolor{structure}{fg=ZooplusGreen}
+
+\setbeamercolor{palette primary}{fg=ZooplusBlue,bg=ZooplusGreen!70}
+\setbeamercolor{palette secondary}{fg=ZooplusBlue,bg=ZooplusGreen!80}
+\setbeamercolor{palette tertiary}{fg=ZooplusBlue,bg=ZooplusGreen!90}
+\setbeamercolor{palette quaternary}{fg=ZooplusBlue,bg=ZooplusGreen}
+
+\setbeamercolor{titlelike}{parent=palette quaternary}
+
+\setbeamercolor{block title}{fg=ZooplusBlue,bg=ZooplusGreen}
+\setbeamercolor{block title alerted}{use=alerted text,fg=ZooplusBlue,bg=alerted text.fg!75!bg}
+\setbeamercolor{block title example}{use=example text,fg=ZooplusBlue,bg=example text.fg!75!bg}
+
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!25!bg}
+\setbeamercolor{block body alerted}{parent=normal text,use=block title alerted,bg=block title alerted.bg!25!bg}
+\setbeamercolor{block body example}{parent=normal text,use=block title example,bg=block title example.bg!25!bg}
+
+\setbeamercolor{sidebar}{bg=ZooplusGreen!70}
+  
+\setbeamercolor{palette sidebar primary}{fg=ZooplusBlue}
+\setbeamercolor{palette sidebar secondary}{fg=ZooplusBlue!75}
+\setbeamercolor{palette sidebar tertiary}{fg=ZooplusBlue!75}
+\setbeamercolor{palette sidebar quaternary}{fg=ZooplusBlue}
+
+\setbeamercolor*{separation line}{}
+\setbeamercolor*{fine separation line}{}
+
+
 %\setbeamercolor{structure}{fg=OliveGreen!50!black}
 %\usecolortheme[named=OliveGreen]{structure}
 \usefonttheme{default}
