@@ -47,15 +47,6 @@ object Pi extends App {
 		}
 	}
 
-	class Listener extends Actor {
-		def receive = {
-			case PiApproximation(pi, duration) ⇒
-				println("\n\tPi approximation: \t\t%s\n\tCalculation time: \t%s"
-					.format(pi, duration))
-				context.system.shutdown()
-		}
-	}
-
 	def calculate(nrOfWorkers: Int, nrOfElements: Int, nrOfMessages: Int) {
 		// Create an Akka system
 		val system = ActorSystem("PiSystem", ConfigFactory.load.getConfig("server"))
