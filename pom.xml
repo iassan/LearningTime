@@ -10,8 +10,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<scala.version>2.10.1</scala.version>
-		<akka.version>2.1.2</akka.version>
+		<scala.version>2.10.2</scala.version>
+		<akka.version>2.2.0</akka.version>
 	</properties>
 
 	<build>
@@ -61,7 +61,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-cluster-experimental_2.10</artifactId>
+			<artifactId>akka-cluster_2.10</artifactId>
 			<version>${akka.version}</version>
 		</dependency>
 	</dependencies>

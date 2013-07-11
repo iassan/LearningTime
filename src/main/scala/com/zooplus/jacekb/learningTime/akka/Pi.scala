@@ -3,7 +3,8 @@ package com.zooplus.jacekb.learningTime.akka
 import akka.actor._
 import akka.routing.RoundRobinRouter
 import scala.concurrent.duration._
-import com.zooplus.jacekb.learningTime.akka.Commons.{PiApproximation, Result, Work, Calculate}
+import com.zooplus.jacekb.learningTime.akka.common.Commons
+import Commons.{PiApproximation, Result, Work, Calculate}
 import akka.remote.routing.RemoteRouterConfig
 import com.typesafe.config.ConfigFactory
 

@@ -1,7 +1,8 @@
 package com.zooplus.jacekb.learningTime.akka
 
 import akka.actor.Actor
-import com.zooplus.jacekb.learningTime.akka.Commons.{Work, Result}
+import com.zooplus.jacekb.learningTime.akka.common.{PiCalculator, Commons}
+import Commons.{Work, Result}
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,15 +15,11 @@ class Worker extends Actor {
 
 	println("Creating worker")
 
-	def calculatePiFor(start: Int, nrOfElements: Int): BigDecimal = {
-		var acc = 0.0
-		for (i ← start until (start + nrOfElements))
-			acc += 4.0 * (1 - (i % 2) * 2) / (2 * i + 1)
-		acc
-	}
+	val piCalculator = new PiCalculator
 
 	def receive = {
 		case Work(start, nrOfElements) ⇒
-			sender ! Result(calculatePiFor(start, nrOfElements)) // perform the work
+			println("Got Work(" + start + ", " + nrOfElements + ")")
+			sender ! Result(piCalculator.calculatePiFor(start, nrOfElements)) // perform the work
 	}
 }
