@@ -27,7 +27,6 @@ object ClusterWorker {
 				case UnreachableMember(member) ⇒
 					log.info("Member detected as unreachable: {}", member)
 				case _: ClusterDomainEvent ⇒ // ignore
-
 			}
 		}), name = "clusterListener")
 

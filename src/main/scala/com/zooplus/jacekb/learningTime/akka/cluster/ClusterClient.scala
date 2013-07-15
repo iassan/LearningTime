@@ -1,8 +1,9 @@
 package com.zooplus.jacekb.learningTime.akka.cluster
 
-import akka.actor.{Props, ActorSystem, Actor}
+import akka.actor.{ActorLogging, Props, ActorSystem, Actor}
 import com.zooplus.jacekb.learningTime.akka.common.Commons.{Calculate, PiApproximation}
 import akka.cluster.Cluster
+import akka.cluster.ClusterEvent.{ClusterDomainEvent, UnreachableMember, MemberUp, CurrentClusterState}
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,9 +17,23 @@ object ClusterClient {
 		// Create an Akka system
 		val system = ActorSystem("ClusterSystem")
 
+		val clusterListener = system.actorOf(Props(new Actor with ActorLogging {
+			def receive = {
+				case state: CurrentClusterState ⇒
+					log.info("Current members: {}", state.members)
+				case MemberUp(member) ⇒
+					log.info("Member is Up: {}", member)
+				case UnreachableMember(member) ⇒
+					log.info("Member detected as unreachable: {}", member)
+				case _: ClusterDomainEvent ⇒ // ignore
+			}
+		}), name = "clusterListener")
+		val cluster = Cluster(system)
+		cluster.subscribe(clusterListener, classOf[ClusterDomainEvent])
 		val client = system.actorOf(Props[Client], name = "client")
-		Cluster(system).subscribe(client, classOf[PiApproximation])
+		cluster.subscribe(client, classOf[PiApproximation])
 		val manager = system.actorOf(Props[Manager], name = "manager")
+		Thread.sleep(7000)
 		println("Sending calculate message")
 		manager ! new Calculate
 	}
