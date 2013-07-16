@@ -1,6 +1,6 @@
 package com.zooplus.jacekb.learningTime.akka
 
-import akka.actor.Actor
+import akka.actor.{ActorLogging, Actor}
 import com.zooplus.jacekb.learningTime.akka.common.{PiCalculator, Commons}
 import Commons.{Work, Result}
 
@@ -11,15 +11,19 @@ import Commons.{Work, Result}
  * Time: 08:21
  */
 
-class Worker extends Actor {
+class Worker extends Actor with ActorLogging {
 
 	println("Creating worker")
 
 	val piCalculator = new PiCalculator
 
+	override def preStart() {
+		log.info("Worker starting")
+	}
+
 	def receive = {
 		case Work(start, nrOfElements) ⇒
-			println("Got Work(" + start + ", " + nrOfElements + ")")
+			log.info("Got Work(" + start + ", " + nrOfElements + ")")
 			sender ! Result(piCalculator.calculatePiFor(start, nrOfElements)) // perform the work
 	}
 }

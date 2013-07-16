@@ -1,9 +1,9 @@
 package com.zooplus.jacekb.learningTime.akka.cluster
 
-import akka.actor.{ActorLogging, Props, ActorSystem, Actor}
-import com.zooplus.jacekb.learningTime.akka.common.Commons.{Calculate, PiApproximation}
+import akka.actor._
+import com.zooplus.jacekb.learningTime.akka.common.Commons.Calculate
 import akka.cluster.Cluster
-import akka.cluster.ClusterEvent.{ClusterDomainEvent, UnreachableMember, MemberUp, CurrentClusterState}
+import com.zooplus.jacekb.learningTime.akka.common.Commons.PiApproximation
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,32 +17,31 @@ object ClusterClient {
 		// Create an Akka system
 		val system = ActorSystem("ClusterSystem")
 
-		val clusterListener = system.actorOf(Props(new Actor with ActorLogging {
-			def receive = {
-				case state: CurrentClusterState ⇒
-					log.info("Current members: {}", state.members)
-				case MemberUp(member) ⇒
-					log.info("Member is Up: {}", member)
-				case UnreachableMember(member) ⇒
-					log.info("Member detected as unreachable: {}", member)
-				case _: ClusterDomainEvent ⇒ // ignore
-			}
-		}), name = "clusterListener")
+		//		val clusterListener = system.actorOf(Props(new Actor with ActorLogging {
+		//			def receive = {
+		//				case state: CurrentClusterState ⇒
+		//					log.info("Current members: {}", state.members)
+		//				case MemberUp(member) ⇒
+		//					log.info("Member is Up: {}", member)
+		//				case UnreachableMember(member) ⇒
+		//					log.info("Member detected as unreachable: {}", member)
+		//				case _: ClusterDomainEvent ⇒ // ignore
+		//			}
+		//		}), name = "clusterListener")
 		val cluster = Cluster(system)
-		cluster.subscribe(clusterListener, classOf[ClusterDomainEvent])
+		//		cluster.subscribe(clusterListener, classOf[ClusterDomainEvent])
 		val client = system.actorOf(Props[Client], name = "client")
 		cluster.subscribe(client, classOf[PiApproximation])
 		val manager = system.actorOf(Props[Manager], name = "manager")
-		Thread.sleep(7000)
-		println("Sending calculate message")
-		manager ! new Calculate
+		cluster.registerOnMemberUp(manager ! Calculate)
+		println("Sent calculate message")
 	}
 
-	class Client extends Actor {
+	class Client extends Actor with ActorLogging {
 
 		def receive = {
 			case PiApproximation(pi, duration) ⇒
-				println("\n\tPi approximation: \t\t%s\n\tCalculation time: \t%s".format(pi, duration))
+				log.info("\n\tPi approximation: \t\t%s\n\tCalculation time: \t%s".format(pi, duration))
 				context.system.shutdown()
 		}
 	}
