@@ -1,0 +1,204 @@
+\documentclass[xcolor=dvipsnames]{beamer}
+\usepackage{fancyvrb}
+\usepackage{thumbpdf}
+\usepackage{relsize}
+\usepackage{amsmath}
+
+\useinnertheme[shadow]{rounded}
+\useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
+
+\definecolor{ZooplusGreen}{RGB}{129,197,46}
+\definecolor{ZooplusBlue}{RGB}{4,6,76}
+
+\setbeamercolor{structure}{fg=ZooplusGreen}
+
+\setbeamercolor{palette primary}{fg=ZooplusBlue,bg=ZooplusGreen!70}
+\setbeamercolor{palette secondary}{fg=ZooplusBlue,bg=ZooplusGreen!80}
+\setbeamercolor{palette tertiary}{fg=ZooplusBlue,bg=ZooplusGreen!90}
+\setbeamercolor{palette quaternary}{fg=ZooplusBlue,bg=ZooplusGreen}
+
+\setbeamercolor{titlelike}{parent=palette quaternary}
+
+\setbeamercolor{block title}{fg=ZooplusBlue,bg=ZooplusGreen}
+\setbeamercolor{block title alerted}{use=alerted text,fg=ZooplusBlue,bg=alerted text.fg!75!bg}
+\setbeamercolor{block title example}{use=example text,fg=ZooplusBlue,bg=example text.fg!75!bg}
+
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!25!bg}
+\setbeamercolor{block body alerted}{parent=normal text,use=block title alerted,bg=block title alerted.bg!25!bg}
+\setbeamercolor{block body example}{parent=normal text,use=block title example,bg=block title example.bg!25!bg}
+
+\setbeamercolor{sidebar}{bg=ZooplusGreen!70}
+
+\setbeamercolor{palette sidebar primary}{fg=ZooplusBlue}
+\setbeamercolor{palette sidebar secondary}{fg=ZooplusBlue!75}
+\setbeamercolor{palette sidebar tertiary}{fg=ZooplusBlue!75}
+\setbeamercolor{palette sidebar quaternary}{fg=ZooplusBlue}
+
+\setbeamercolor*{separation line}{}
+\setbeamercolor*{fine separation line}{}
+
+\logo{\includegraphics[scale=0.25]{../../zooplus_logo.png}}
+
+\usefonttheme{default}
+\setbeamercovered{transparent}
+\title{Handling errors in Scala}
+\author{Jacek~Bilski}
+\date{\today}
+\subject{Handling errors in Scala}
+
+\setbeamertemplate{navigation symbols}
+{
+	\usebeamercolor[fg]{navigation symbols dimmed}
+	{
+		\insertframenumber\,/\,\inserttotalframenumber
+	}
+}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Agenda}
+\tableofcontents[pausesections]
+\end{frame}
+
+% Option, Either, Try
+
+
+\section{Introduction}
+
+\begin{frame}
+\frametitle{Errors in Scala}
+\begin{itemize}
+\item Scala runs on JVM
+\item ...hence we have all exceptions from Java world available,
+\item ...but who said they're the best ways of handling issues.
+\item Scala is also a functional language, and there problems are handled in a different way.
+\end{itemize}
+\end{frame}
+
+\section{Option}
+
+\frame[containsverbatim]{
+\frametitle{Mean function}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object ErrorHandling {
+
+	def main(args: Array[String]): Unit = {
+		println(mean(Seq(1, 2, 3)))
+	}
+
+	def mean(numbers: Seq[BigDecimal]): BigDecimal =
+		numbers.sum / numbers.size
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Mean function being mean}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object ErrorHandling {
+
+	def main(args: Array[String]): Unit = {
+		println(mean(Seq()))
+	}
+
+	def mean(numbers: Seq[BigDecimal]): BigDecimal =
+		numbers.sum / numbers.size
+}
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{Option type}
+\begin{itemize}
+\item We have $Option$ type.
+\item Option has two subtypes:
+    \begin{itemize}
+    \item $Some$ representing data being there
+    \item $None$ representing no data (for whatever reason)
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Mean function version 2}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object ErrorHandling {
+
+	def main(args: Array[String]): Unit = {
+		println(mean(Seq()))
+		println(mean(Seq(1, 2, 3)))
+	}
+
+	def mean2(numbers: Seq[BigDecimal]): Option[BigDecimal] =
+		if (numbers.size == 0)
+			None
+		else
+			Some(numbers.sum / numbers.size)
+}
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{How does the Option influence other parts of the system?}
+\begin{itemize}
+\item Do we now ''pollute'' our whole system with Options?
+\item Answer: no!
+\end{itemize}
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Following computation}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object ErrorHandling {
+
+	def main(args: Array[String]): Unit = {
+		println(three(mean2(Seq())))    // <- compilation error
+	}
+
+    def three(x: BigDecimal): BigDecimal = x * 3
+
+	def mean2(numbers: Seq[BigDecimal]): Option[BigDecimal] =
+		if (numbers.size == 0)
+			None
+		else
+			Some(numbers.sum / numbers.size)
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Following computation --- map}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object ErrorHandling {
+
+	def main(args: Array[String]): Unit = {
+		println(mean2(Seq(1, 2, 3)) map three)
+	}
+
+    def three(x: BigDecimal): BigDecimal = x * 3
+
+	def mean2(numbers: Seq[BigDecimal]): Option[BigDecimal] =
+		if (numbers.size == 0)
+			None
+		else
+			Some(numbers.sum / numbers.size)
+}
+\end{Verbatim}
+}
+
+\section{Questions?}
+
+\begin{frame}
+\frametitle{Questions?}
+\begin{center}
+\Huge{?}
+\end{center}
+\end{frame}
+
+
+\end{document}
