@@ -65,9 +65,6 @@
 \tableofcontents[pausesections]
 \end{frame}
 
-% Option, Either, Try
-
-
 \section{Introduction}
 
 \begin{frame}
@@ -87,12 +84,12 @@
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object ErrorHandling {
 
+	def mean(numbers: Seq[BigDecimal]): BigDecimal =
+		numbers.sum / numbers.size
+
 	def main(args: Array[String]): Unit = {
 		println(mean(Seq(1, 2, 3)))
 	}
-
-	def mean(numbers: Seq[BigDecimal]): BigDecimal =
-		numbers.sum / numbers.size
 }
 \end{Verbatim}
 }
@@ -102,43 +99,54 @@ object ErrorHandling {
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object ErrorHandling {
 
-	def main(args: Array[String]): Unit = {
-		println(mean(Seq()))
-	}
-
 	def mean(numbers: Seq[BigDecimal]): BigDecimal =
 		numbers.sum / numbers.size
+
+	def main(args: Array[String]): Unit = {
+		println(mean(Seq()))	// ArithmeticException
+	}
 }
 \end{Verbatim}
 }
 
 \begin{frame}
-\frametitle{Option type}
+\frametitle{$Option$ type}
 \begin{itemize}
 \item We have $Option$ type.
-\item Option has two subtypes:
-    \begin{itemize}
-    \item $Some$ representing data being there
-    \item $None$ representing no data (for whatever reason)
-    \end{itemize}
+\item $Option$ has two subtypes:
+	\begin{itemize}
+	\item $Some$ representing data being there
+	\item $None$ representing no data (for whatever reason)
+	\end{itemize}
 \end{itemize}
 \end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Formal definition}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+sealed abstract class Option[+A] extends Serializable
+
+final case class Some[+A](x: A) extends Option[A] with Serializable
+
+object None extends Option[Nothing] with Serializable
+\end{Verbatim}
+}
 
 \frame[containsverbatim]{
 \frametitle{Mean function version 2}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object ErrorHandling {
 
-	def main(args: Array[String]): Unit = {
-		println(mean(Seq()))
-		println(mean(Seq(1, 2, 3)))
-	}
-
 	def mean2(numbers: Seq[BigDecimal]): Option[BigDecimal] =
 		if (numbers.size == 0)
 			None
 		else
 			Some(numbers.sum / numbers.size)
+
+	def main(args: Array[String]): Unit = {
+		println(mean2(Seq()))
+		println(mean2(Seq(1, 2, 3)))
+	}
 }
 \end{Verbatim}
 }
@@ -156,17 +164,18 @@ object ErrorHandling {
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object ErrorHandling {
 
-	def main(args: Array[String]): Unit = {
-		println(three(mean2(Seq())))    // <- compilation error
-	}
-
-    def three(x: BigDecimal): BigDecimal = x * 3
+	def timesThree(x: BigDecimal): BigDecimal = x * 3
 
 	def mean2(numbers: Seq[BigDecimal]): Option[BigDecimal] =
 		if (numbers.size == 0)
 			None
 		else
 			Some(numbers.sum / numbers.size)
+
+	def main(args: Array[String]): Unit = {
+		println(timesThree(mean2(Seq())))	// <- compilation error
+		// required BigDecimal, got Option[BigDecimal]
+	}
 }
 \end{Verbatim}
 }
@@ -176,20 +185,127 @@ object ErrorHandling {
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 object ErrorHandling {
 
-	def main(args: Array[String]): Unit = {
-		println(mean2(Seq(1, 2, 3)) map three)
-	}
-
-    def three(x: BigDecimal): BigDecimal = x * 3
+	def timesThree(x: BigDecimal): BigDecimal = x * 3
 
 	def mean2(numbers: Seq[BigDecimal]): Option[BigDecimal] =
 		if (numbers.size == 0)
 			None
 		else
 			Some(numbers.sum / numbers.size)
+
+	def main(args: Array[String]): Unit = {
+		println(mean2(Seq(1, 2, 3)) map timesThree) // Some(6)
+		println(mean2(Seq()) map timesThree)	// None
+	}
 }
 \end{Verbatim}
 }
+
+\begin{frame}
+\frametitle{''But why I got $None$?''}
+\begin{itemize}
+\item Returning just $None$ might not be enough.
+\item Sometimes we need to know why we didn't get what we expected.
+\end{itemize}
+\end{frame}
+
+\section{Either}
+
+\begin{frame}
+\frametitle{$Either$ type}
+\begin{itemize}
+\item We have $Either$ type.
+\item It represents a value of two possible types (a disjoint union).
+\item $Either$ has two subtypes:
+	\begin{itemize}
+	\item $Left$
+	\item $Right$
+	\end{itemize}
+\item Traditionally $Right$ is used to return success, $Left$ is used to return failures.
+\end{itemize}
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Formal definition}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+sealed abstract class Either[+A, +B] extends AnyRef
+
+final case class Left[+A, +B](a: A) extends Either[A, B] with Serializable
+
+final case class Right[+A, +B](b: B) extends Either[A, B] with Serializable
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Mean function version 3}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object ErrorHandling {
+
+	def mean3(numbers: Seq[BigDecimal]): Either[String, BigDecimal] =
+		if (numbers.size == 0)
+			Left("Sequence empty")
+		else
+			Right(numbers.sum / numbers.size)
+
+	def main(args: Array[String]): Unit = {
+		println(mean3(Seq(1, 2, 3))) // Right(2)
+		println(mean3(Seq()))	// Left(Sequence empty)
+		println(mean3(Seq(1, 2, 3)).right map timesThree) // Right(6)
+		println(mean3(Seq()).right map timesThree)	// Left(Sequence empty)
+	}
+}
+\end{Verbatim}
+}
+
+\section{Try}
+
+\begin{frame}
+\frametitle{$Try$ type}
+\begin{itemize}
+\item $Try$ is a specialized version of $Either$
+\item It represents a value of two possible types (a disjoint union).
+\item $Try$ has two subtypes:
+	\begin{itemize}
+	\item $Failure$
+	\item $Success$
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{Formal definition}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+sealed abstract class Try[+T] extends AnyRef
+
+final case class Failure[+T](exception: Throwable) extends Try[T] with Serializable
+
+final case class Success[+T](value: T) extends Try[T] with Product with Serializable
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Mean function version 4}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+object ErrorHandling {
+
+	def mean4(numbers: Seq[BigDecimal]): Try[BigDecimal] =
+		try {
+			Success(numbers.sum / numbers.size)
+		} catch {
+			case e: Exception => Failure(e)
+		}
+
+	def main(args: Array[String]): Unit = {
+		println(mean4(Seq(1, 2, 3))) // Success(2)
+		println(mean4(Seq()))   // Failure(java.lang.ArithmeticException: Division undefined)
+		println(mean4(Seq(1, 2, 3)) map timesThree) // Success(6)
+		println(mean4(Seq()) map timesThree)	// Failure(java.lang.ArithmeticException: Division undefined)
+	}
+}
+\end{Verbatim}
+}
+
+% Guava: com.google.common.base.Optional<T>
 
 \section{Questions?}
 
