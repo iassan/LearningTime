@@ -89,6 +89,7 @@ object ErrorHandling {
 
 	def main(args: Array[String]): Unit = {
 		println(mean(Seq(1, 2, 3)))
+			// 2
 	}
 }
 \end{Verbatim}
@@ -103,7 +104,8 @@ object ErrorHandling {
 		numbers.sum / numbers.size
 
 	def main(args: Array[String]): Unit = {
-		println(mean(Seq()))	// ArithmeticException
+		println(mean(Seq()))
+			// ArithmeticException
 	}
 }
 \end{Verbatim}
@@ -145,7 +147,9 @@ object ErrorHandling {
 
 	def main(args: Array[String]): Unit = {
 		println(mean2(Seq()))
+			// None
 		println(mean2(Seq(1, 2, 3)))
+			// Some(2)
 	}
 }
 \end{Verbatim}
@@ -194,8 +198,10 @@ object ErrorHandling {
 			Some(numbers.sum / numbers.size)
 
 	def main(args: Array[String]): Unit = {
-		println(mean2(Seq(1, 2, 3)) map timesThree) // Some(6)
-		println(mean2(Seq()) map timesThree)	// None
+		println(mean2(Seq(1, 2, 3)) map timesThree)
+			// Some(6)
+		println(mean2(Seq()) map timesThree)
+			// None
 	}
 }
 \end{Verbatim}
@@ -230,9 +236,9 @@ object ErrorHandling {
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 sealed abstract class Either[+A, +B] extends AnyRef
 
-final case class Left[+A, +B](a: A) extends Either[A, B] with Serializable
+final case class Left[+A, +B](a: A) extends Either[A, B]
 
-final case class Right[+A, +B](b: B) extends Either[A, B] with Serializable
+final case class Right[+A, +B](b: B) extends Either[A, B]
 \end{Verbatim}
 }
 
@@ -243,15 +249,19 @@ object ErrorHandling {
 
 	def mean3(numbers: Seq[BigDecimal]): Either[String, BigDecimal] =
 		if (numbers.size == 0)
-			Left("Sequence empty")
+			Left("Seq empty")
 		else
 			Right(numbers.sum / numbers.size)
 
 	def main(args: Array[String]): Unit = {
-		println(mean3(Seq(1, 2, 3))) // Right(2)
-		println(mean3(Seq()))	// Left(Sequence empty)
-		println(mean3(Seq(1, 2, 3)).right map timesThree) // Right(6)
-		println(mean3(Seq()).right map timesThree)	// Left(Sequence empty)
+		println(mean3(Seq(1, 2, 3)))
+			// Right(2)
+		println(mean3(Seq()))
+			// Left(Seq empty)
+		println(mean3(Seq(1, 2, 3)).right map timesThree)
+			// Right(6)
+		println(mean3(Seq()).right map timesThree)
+			// Left(Seq empty)
 	}
 }
 \end{Verbatim}
@@ -269,6 +279,7 @@ object ErrorHandling {
 	\item $Failure$
 	\item $Success$
 	\end{itemize}
+\item Failure contains exception, that would be otherwise thrown, Success contains desired result
 \end{itemize}
 \end{frame}
 
@@ -277,9 +288,9 @@ object ErrorHandling {
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
 sealed abstract class Try[+T] extends AnyRef
 
-final case class Failure[+T](exception: Throwable) extends Try[T] with Serializable
+final case class Failure[+T](exception: Throwable) extends Try[T]
 
-final case class Success[+T](value: T) extends Try[T] with Product with Serializable
+final case class Success[+T](value: T) extends Try[T]
 \end{Verbatim}
 }
 
@@ -296,16 +307,34 @@ object ErrorHandling {
 		}
 
 	def main(args: Array[String]): Unit = {
-		println(mean4(Seq(1, 2, 3))) // Success(2)
-		println(mean4(Seq()))   // Failure(java.lang.ArithmeticException: Division undefined)
-		println(mean4(Seq(1, 2, 3)) map timesThree) // Success(6)
-		println(mean4(Seq()) map timesThree)	// Failure(java.lang.ArithmeticException: Division undefined)
+		println(mean4(Seq(1, 2, 3)))
+			// Success(2)
+		println(mean4(Seq()))
+			// Failure(java.lang.ArithmeticException: Division undefined)
+		println(mean4(Seq(1, 2, 3)) map timesThree)
+			// Success(6)
+		println(mean4(Seq()) map timesThree)
+			// Failure(java.lang.ArithmeticException: Division undefined)
 	}
 }
 \end{Verbatim}
 }
 
 % Guava: com.google.common.base.Optional<T>
+
+\section{Java world}
+
+\begin{frame}
+\frametitle{How can we us it now?}
+\begin{itemize}
+\item Java itself doesn't have equivalents of those classes.
+\item But we have other libraries like:
+	\begin{itemize}
+	\item FunctionalJava: http://functionaljava.org/ (Either, Option)
+	\item Google Guava: http://code.google.com/p/guava-libraries/ (Optional)
+	\end{itemize}
+\end{itemize}
+\end{frame}
 
 \section{Questions?}
 
@@ -315,6 +344,5 @@ object ErrorHandling {
 \Huge{?}
 \end{center}
 \end{frame}
-
 
 \end{document}
