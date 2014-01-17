@@ -5,8 +5,6 @@ import akka.routing.RoundRobinRouter
 import scala.concurrent.duration._
 import com.zooplus.jacekb.learningTime.akka.common.Commons
 import Commons.{PiApproximation, Result, Work, Calculate}
-import akka.remote.routing.RemoteRouterConfig
-import com.typesafe.config.ConfigFactory
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +14,7 @@ import com.typesafe.config.ConfigFactory
  */
 object Pi extends App {
 
-	calculate(nrOfWorkers = 16, nrOfElements = 10000, nrOfMessages = 100000)
+	calculate(nrOfWorkers = 8, nrOfElements = 10000, nrOfMessages = 100000)
 
 	class Master(nrOfWorkers: Int,
 							 nrOfMessages: Int,
@@ -27,10 +25,8 @@ object Pi extends App {
 		var nrOfResults: Int = _
 		val start: Long = System.currentTimeMillis
 
-		val workerAddresses = Seq(AddressFromURIString("akka://PiSystem@192.168.22.60:2553"), AddressFromURIString("akka://PiSystem@192.168.22.60:2554"))
-
 		val workerRouter = context.actorOf(
-			Props[Worker].withRouter(RemoteRouterConfig(RoundRobinRouter(nrOfWorkers), workerAddresses)), name = "workerRouter")
+			Props[Worker].withRouter(RoundRobinRouter(nrOfWorkers)), name = "workerRouter")
 
 		def receive = {
 			case Calculate ⇒
@@ -50,7 +46,7 @@ object Pi extends App {
 
 	def calculate(nrOfWorkers: Int, nrOfElements: Int, nrOfMessages: Int) {
 		// Create an Akka system
-		val system = ActorSystem("PiSystem", ConfigFactory.load.getConfig("server"))
+		val system = ActorSystem("PiSystem")
 
 		// create the result listener, which will print the result and
 		// shutdown the system

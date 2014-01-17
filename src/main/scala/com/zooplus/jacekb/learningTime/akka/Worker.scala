@@ -15,6 +15,8 @@ class Worker extends Actor with ActorLogging {
 
 	println("Creating worker")
 
+	val role = "worker"
+
 	val piCalculator = new PiCalculator
 
 	override def preStart() {
@@ -23,7 +25,7 @@ class Worker extends Actor with ActorLogging {
 
 	def receive = {
 		case Work(start, nrOfElements) ⇒
-			log.info("Got Work(" + start + ", " + nrOfElements + ")")
-			sender ! Result(piCalculator.calculatePiFor(start, nrOfElements)) // perform the work
+			//log.info("Got Work(" + start + ", " + nrOfElements + ")")
+		sender ! Result(piCalculator.calculatePiFor(start, nrOfElements)) // perform the work
 	}
 }

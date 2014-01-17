@@ -18,6 +18,8 @@ import akka.routing.ConsistentHashingRouter.ConsistentHashableEnvelope
 class Manager extends Actor with ActorLogging {
 	val workerRouter = context.actorOf(Props[Worker].withRouter(FromConfig), name = "workerRouter")
 
+	val role = "manager"
+
 	var pi: BigDecimal = 0
 	var nrOfResults: Int = _
 	var start: Long = System.currentTimeMillis

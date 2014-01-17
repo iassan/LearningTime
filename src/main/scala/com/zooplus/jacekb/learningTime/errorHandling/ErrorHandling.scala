@@ -36,5 +36,6 @@ object ErrorHandling {
 
 	def main(args: Array[String]): Unit = {
 		println(mean4(Seq(1, 2, 3)))
+		println(mean3(Seq(1, 2, 3)).right map three)
 	}
 }
