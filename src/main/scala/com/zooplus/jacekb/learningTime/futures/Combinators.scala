@@ -5,8 +5,9 @@ import java.util.Date
 import com.zooplus.jacekb.learningTime.akka.common.PiCalculator
 import scala.concurrent.duration._
 import ExecutionContext.Implicits.global
-import java.net.URL
+import java.net.{InetSocketAddress, URL, Proxy}
 import scala.io.Source
+import scala.async.Async.async
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,16 +30,17 @@ object Combinators {
 		f map showResult
 		val d: Future[(BigDecimal, Long)] = future {
 			val start = new Date().getTime
-			val url = new URL("http://www.angio.net/pi/digits/50.txt")
-			val in = Source.fromInputStream(url.openStream())
-			val data = in.getLines().next()
+			val url = new URL("http://www.angio.net/pi/digits/pi1000000.txt")
+			val proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("192.168.20.55", 3128))
+			val in = Source.fromInputStream(url.openConnection(proxy).getInputStream)
+			val data = in.getLines().next().substring(0, 20)
 			val end = new Date().getTime
 			(BigDecimal(data), end - start)
 		}
 		println("Downloading of π fired up")
 		d.map(x => println(s"Downloaded π: ${x._1}, time: ${x._2}"))
 		Future.all(List(f, d)) map compareπ(globalStart)
-		Thread.sleep(10000)
+		Thread.sleep(20000)
 	}
 
 	def showResult(x: (BigDecimal, Long)): Unit = {
@@ -49,16 +51,16 @@ object Combinators {
 		val a = x(0)._1
 		val b = x(1)._1
 		val globalEnd = new Date().getTime
-		println(s"Difference in π values: ${(a - b).abs}")
+		println(s"Difference in π values: ${(a - b).abs.bigDecimal.toPlainString}")
 		println(s"Global execution time: ${globalEnd - globalStart}")
 	}
 
 	implicit class FutureCompanionOps[T](val f: Future.type) extends AnyVal {
-		def always[T](value: T): Future[T] = Promise.successful(value).future
-
-		def all[T](fs: List[Future[T]]): Future[List[T]] = always(blocking {
-			fs.map(Await.result(_, Duration.Inf))
-		})
+		def all[T](fs: List[Future[T]]): Future[List[T]] = {
+			async {
+				fs.map(Await.result(_, Duration.Inf))
+			}
+		}
 	}
 
 }
