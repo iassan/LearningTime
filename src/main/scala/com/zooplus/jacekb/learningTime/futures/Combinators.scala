@@ -29,18 +29,31 @@ object Combinators {
 		println("Calculation of π fired up")
 		f map showResult
 		val d: Future[(BigDecimal, Long)] = future {
-			val start = new Date().getTime
-			val url = new URL("http://www.angio.net/pi/digits/pi1000000.txt")
-			val proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("192.168.20.55", 3128))
-			val in = Source.fromInputStream(url.openConnection(proxy).getInputStream)
-			val data = in.getLines().next().substring(0, 20)
-			val end = new Date().getTime
-			(BigDecimal(data), end - start)
+			try {
+				val start = new Date().getTime
+				val url = new URL("http://www.angio.net/pi/digits/pi1000000.txt")
+				//println(s"URL: $url")
+				val proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.168.20.55", 3128))
+				//println(s"Proxy: $proxy")
+				val in = Source.fromInputStream(url.openConnection(proxy).getInputStream)
+				//val in = Source.fromInputStream(url.openStream)
+				//println(s"Got stream")
+				val data = in.getLines().next().substring(0, 20)
+				//println(s"Got data: $data")
+				val end = new Date().getTime
+				(BigDecimal(data), end - start)
+			} catch {
+				case t: Throwable =>
+					println(s"Throwable during download: ${t.getMessage}")
+					throw new RuntimeException()
+			}
 		}
 		println("Downloading of π fired up")
 		d.map(x => println(s"Downloaded π: ${x._1}, time: ${x._2}"))
-		Future.all(List(f, d)) map compareπ(globalStart)
-		Thread.sleep(20000)
+		val both = Future.all(List(f, d))
+		both map compareπ(globalStart)
+		Await.ready(both, Duration.Inf)
+		Thread.sleep(1000)
 	}
 
 	def showResult(x: (BigDecimal, Long)): Unit = {
