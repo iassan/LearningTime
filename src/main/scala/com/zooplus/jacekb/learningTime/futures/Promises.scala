@@ -1,8 +1,9 @@
 package com.zooplus.jacekb.learningTime.futures
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{Await, Future, Promise}
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,12 +23,13 @@ object Promises {
 
 		println("Trying to fulfill a promise")
 		p.success("Promise fulfilled")
+		Await.ready(f, Duration.Inf)
 		Thread.sleep(1000)
 	}
 
 	def showResult(x: Try[String]): Unit = {
 		x match {
-			case Success(s) => println(s)
+			case Success(s) => println(s"Result: $s")
 			case Failure(t) => println(s"Operation failed, exception message: ${t.getMessage}")
 		}
 	}

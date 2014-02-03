@@ -31,15 +31,11 @@ object Combinators {
 		val d: Future[(BigDecimal, Long)] = future {
 			try {
 				val start = new Date().getTime
+				Thread.sleep(2000)
 				val url = new URL("http://www.angio.net/pi/digits/pi1000000.txt")
-				//println(s"URL: $url")
 				val proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.168.20.55", 3128))
-				//println(s"Proxy: $proxy")
 				val in = Source.fromInputStream(url.openConnection(proxy).getInputStream)
-				//val in = Source.fromInputStream(url.openStream)
-				//println(s"Got stream")
 				val data = in.getLines().next().substring(0, 20)
-				//println(s"Got data: $data")
 				val end = new Date().getTime
 				(BigDecimal(data), end - start)
 			} catch {
@@ -75,5 +71,4 @@ object Combinators {
 			}
 		}
 	}
-
 }

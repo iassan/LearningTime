@@ -5,6 +5,7 @@ import java.util.Date
 import com.zooplus.jacekb.learningTime.akka.common.PiCalculator
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,7 +25,8 @@ object Futures {
 		}
 		println("Calculation of π fired up")
 		f onComplete showResult
-		Thread.sleep(10000)
+		Await.ready(f, Duration.Inf)
+		Thread.sleep(1000)
 	}
 
 	def showResult(x: Try[(BigDecimal, Long)]): Unit = {
