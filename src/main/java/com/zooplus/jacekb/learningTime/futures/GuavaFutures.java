@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
  * Time: 15:29
  */
 public class GuavaFutures {
+
     public static void main(String[] args) {
         try {
             ListeningScheduledExecutorService service = MoreExecutors.listeningDecorator(Executors.newScheduledThreadPool(4));

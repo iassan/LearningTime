@@ -66,6 +66,7 @@
 \begin{itemize}
 \item \href{http://akka.io/}{http://akka.io/}
 \item Implements actors system for Scala \& Java
+\item Based on Erlang actors
 \end{itemize}
 \end{frame}
 
@@ -85,9 +86,10 @@
 \begin{itemize}
 \item Very lightweight concurrent entities
 \item Process messages asynchronously, one by one using an event-driven receive loop
-\item ''Little'' SOA
 \item No need to worry about threads, locks, etc. if messages are immutable
 \item Can be transparently remote
+\item ''Little'' SOA
+\item Realization of an idea behind OOP --- objects exchanging messages
 \end{itemize}
 \end{frame}
 
@@ -195,6 +197,7 @@ def receive = {
 class Master extends Actor {
 
 var pi: BigDecimal = 0
+val start: Long = System.currentTimeMillis
 var nrOfResults: Int = _
 
 val workerRouter = context.actorOf(
@@ -210,7 +213,8 @@ def receive = {
 		nrOfResults += 1
 		if (nrOfResults == nrOfMessages) {
 			// Send the result to the listener
-			listener ! PiApproximation(pi)
+			listener ! PiApproximation(pi,
+					duration = (System.currentTimeMillis - start).millis)
 			// Stops this actor and all its supervised children
 			context.stop(self)
 		}
@@ -252,6 +256,17 @@ Execution times:\\
 
 \section{Why all that?}
 
+\begin{frame}
+\frametitle{Why all that?}
+\begin{itemize}
+\item Scalability (both horizontal and vertical)
+\item Fault tolerance --- hierarchies and supervision
+\item Load management --- back-off strategies, timeouts, processing isolation
+\item Batch processing in a ''divide and conquer'' way
+\item Highly responsive systems
+\item Asynchronous message processing
+\end{itemize}
+\end{frame}
 
 
 \section{Questions?}
