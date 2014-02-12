@@ -13,8 +13,7 @@ import Commons.PiApproximation
 class Listener extends Actor {
 	def receive = {
 		case PiApproximation(pi, duration) ⇒
-			println("\n\tPi approximation: \t\t%s\n\tCalculation time: \t%s"
-				.format(pi, duration))
+			println(s"\n\tPi approximation: \t$pi\n\tCalculation time: \t$duration")
 			context.system.shutdown()
 	}
 }

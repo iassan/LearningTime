@@ -59,41 +59,6 @@
 \tableofcontents[pausesections]
 \end{frame}
 
-\section{Akka}
-
-\begin{frame}
-\frametitle{Akka}
-\begin{itemize}
-\item \href{http://akka.io/}{http://akka.io/}
-\item Implements actors system for Scala \& Java
-\item Based on Erlang actors
-\end{itemize}
-\end{frame}
-
-
-\section{Actors system}
-
-\begin{frame}
-\frametitle{Actors system}
-\begin{itemize}
-\item Hierarchy of actors
-\item Manages actors, creates threads, routes messages, etc.
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Actors}
-\begin{itemize}
-\item Very lightweight concurrent entities
-\item Process messages asynchronously, one by one using an event-driven receive loop
-\item No need to worry about threads, locks, etc. if messages are immutable
-\item Can be transparently remote
-\item ''Little'' SOA
-\item Realization of an idea behind OOP --- objects exchanging messages
-\end{itemize}
-\end{frame}
-
-
 \section{Scala}
 
 \frame[containsverbatim]{
@@ -103,7 +68,8 @@ package com.zooplus.jacekb.learningTime.scala
 
 object Hello {
 	def main(args: Array[String]) {
-		println("Hello World!")
+		val name = "Zooplus"
+		println(s"Hello World! Hello $name!")
 	}
 }
 \end{Verbatim}
@@ -117,24 +83,67 @@ object Hello {
 \item No ''return'' keyword, value of last expression is the function's result.
 \item Variables and parameters are defined in a different way that in Java: $name:\:Type$
 \item Generics are using square brackets ($[]$) rather than lesser/greater than ($<>$)
-\item Hello is an object, not a class. It's a singleton with all methods ''static''. There are no ''static'' methods in Scala, you define a class and object with the same name.
+%\item Hello is an object, not a class. It's a singleton with all methods ''static''. There are no ''static'' methods in Scala, you define a class and object with the same name.
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Hello World explained -- defining functions}
+\frametitle{Hello World explained -- continued}
 \begin{itemize}
 \item We define functions with: $def\:functionName$,
 \item then we add some parameters: $def\:f(x:\:Int, y:\:String)$,
 \item then we may (it's necessary only for recursive functions) define return type: $def\:f(x:\:Int):\:Int$,
-\item then we define functions body: $x * x$ (we can omit parenthesis, because the body is a proper Scala expression).
-\item In total: $def\:f(x:\:Int) = x * x$.
-\item When function doesn't take parameters, we can skip the parenthesis completely: $def\:f = 3$
+\item then we define functions body: $\{ x * x \}$. %(we can omit parenthesis, because the body is a proper Scala expression).
+%\item In total: $def\:f(x:\:Int) \{ x * x \}$.
+%\item When function doesn't take parameters, we can skip the parenthesis completely: $def\:f = 3$.
+\item In method's body we can define a variable using $val\:variableName = value$.
+\item Types of variables can usually are inferred, usually can be omitted.
+\end{itemize}
+\end{frame}
+
+
+\section{Actors system}
+
+\subsection{Akka}
+
+\begin{frame}
+\frametitle{Akka}
+\begin{itemize}
+\item \href{http://akka.io/}{http://akka.io/}
+\item Implements actors system for Scala \& Java
+\item Based on Erlang actors
+\end{itemize}
+\end{frame}
+
+\subsection{Actors systems}
+
+\begin{frame}
+\frametitle{Actors system}
+\begin{itemize}
+\item Hierarchy of actors
+\item Manages actors, creates threads, routes messages, etc.
+\end{itemize}
+\end{frame}
+
+\subsection{Actors}
+
+\begin{frame}
+\frametitle{Actors}
+Main goal: solve several issues with concurrency, parallelism or multithreaded programming
+\begin{itemize}
+\item Very lightweight concurrent entities
+\item Process messages asynchronously, one by one using an event-driven receive loop
+\item No need to worry about threads, locks, etc. if messages are immutable
+\item Can be transparently remote
+%\item ''Little'' SOA
+\item Realization of an idea behind OOP -- objects exchanging messages
 \end{itemize}
 \end{frame}
 
 
 \section{Problem}
+
+\subsection{Problem}
 
 \begin{frame}
 \frametitle{Problem: calculating value of $\pi$}
@@ -144,7 +153,7 @@ Formula:
 %\end{equation}
 \end{frame}
 
-\section{Solution}
+\subsection{Solution}
 
 \begin{frame}
 \frametitle{Divide and conquer}
@@ -184,8 +193,8 @@ calculate(workersNo = 4, elementsNo = 10000, messagesNo = 100000)
 class Listener extends Actor {
 def receive = {
 	case PiApproximation(pi, duration) =>
-		println("\n\tPi approximation: \t\t%s".format(pi))
-		println("\n\tCalculation time: \t%s".format(duration))
+		println(s"\tPi approximation: \t$pi)
+		println(s"\tCalculation time: \t$duration")
 		context.system.shutdown()
 }}
 \end{Verbatim}
@@ -199,7 +208,6 @@ class Master extends Actor {
 var pi: BigDecimal = 0
 val start: Long = System.currentTimeMillis
 var nrOfResults: Int = _
-
 val workerRouter = context.actorOf(
 	Props[Worker].withRouter(RoundRobinRouter(nrOfWorkers)),
 		name = "workerRouter")
@@ -215,8 +223,7 @@ def receive = {
 			// Send the result to the listener
 			listener ! PiApproximation(pi,
 					duration = (System.currentTimeMillis - start).millis)
-			// Stops this actor and all its supervised children
-			context.stop(self)
+			context.stop(self) // Stops this actor and all its children
 		}
 }}
 \end{Verbatim}
@@ -238,10 +245,11 @@ def receive = {
 	case Work(start, nrOfElements) =>
 		// perform the work
 		sender ! Result(calculatePiFor(start, nrOfElements))
-}
-}
+}}
 \end{Verbatim}
 }
+
+\subsection{Results}
 
 \begin{frame}
 \frametitle{Results}
@@ -260,14 +268,26 @@ Execution times:\\
 \frametitle{Why all that?}
 \begin{itemize}
 \item Scalability (both horizontal and vertical)
-\item Fault tolerance --- hierarchies and supervision
-\item Load management --- back-off strategies, timeouts, processing isolation
+\item Fault tolerance -- hierarchies and supervision
+\item Load management -- back-off strategies, timeouts, processing isolation
 \item Batch processing in a ''divide and conquer'' way
 \item Highly responsive systems
 \item Asynchronous message processing
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+\frametitle{There's more!}
+Akka is extensible:
+\begin{itemize}
+\item Camel integration,
+\item clustering,
+\item durable mailboxes,
+\item OSGi support,
+\item MQ systems support
+\item \ldots and many more
+\end{itemize}
+\end{frame}
 
 \section{Questions?}
 
@@ -277,6 +297,5 @@ Execution times:\\
 \Huge{?}
 \end{center}
 \end{frame}
-
 
 \end{document}
