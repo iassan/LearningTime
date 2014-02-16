@@ -6,6 +6,7 @@
 \usepackage{thumbpdf}
 \usepackage{relsize}
 \usepackage{amsmath}
+\usepackage{pgfplots}
 
 \useinnertheme[shadow]{rounded}
 \useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
@@ -254,11 +255,31 @@ def receive = {
 \begin{frame}
 \frametitle{Results}
 $\pi = 3.141592652589784499499528724894 \gets$ no wonder :)
-Execution times:\\
-1 worker -- 15830 milliseconds\\
-2 workers -- 6871 milliseconds\\
-4 workers -- 4063 milliseconds\\
-8 workers -- 3668 milliseconds
+\begin{tikzpicture}
+\begin{axis}[
+	ylabel={Time [s]},
+	ybar,
+	xlabel={\# of cores},
+	symbolic x coords={1,2,4,8},
+	xtick=data,
+	enlarge x limits=0.2,
+	nodes near coords,
+	bar width=30pt,
+	grid=none,
+	ymajorgrids=true,
+	axis x line*=bottom,
+	axis y line=left,
+	ymin=0,
+	ymax=17,
+]
+\addplot[color=ZooplusGreen!120, fill=ZooplusGreen!50] coordinates {(1,15.830) (2,6.871) (4,4.063) (8,3.668)};
+\end{axis}
+\end{tikzpicture}
+%Execution times:\\
+%1 worker -- 15830 milliseconds\\
+%2 workers -- 6871 milliseconds\\
+%4 workers -- 4063 milliseconds\\
+%8 workers -- 3668 milliseconds
 \end{frame}
 
 
