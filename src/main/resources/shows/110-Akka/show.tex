@@ -12,24 +12,28 @@
 \useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
 
 \definecolor{ZooplusGreen}{RGB}{129,197,46}
-\definecolor{ZooplusBlue}{RGB}{4,6,76}
+\definecolor{ZooplusOrange}{RGB}{255,136,0}
+\definecolor{ZooplusSeriesGreen1}{RGB}{106,163,38}
+\definecolor{ZooplusSeriesGreen2}{RGB}{129,197,46}
+\definecolor{ZooplusSeriesGreen3}{RGB}{186,219,164}
+\definecolor{ZooplusGrey}{RGB}{64,64,64}
 \setbeamercolor{structure}{fg=ZooplusGreen}
-\setbeamercolor{palette primary}{fg=ZooplusBlue,bg=ZooplusGreen!70}
-\setbeamercolor{palette secondary}{fg=ZooplusBlue,bg=ZooplusGreen!80}
-\setbeamercolor{palette tertiary}{fg=ZooplusBlue,bg=ZooplusGreen!90}
-\setbeamercolor{palette quaternary}{fg=ZooplusBlue,bg=ZooplusGreen}
+\setbeamercolor{palette primary}{fg=ZooplusGrey,bg=ZooplusSeriesGreen3}
+\setbeamercolor{palette secondary}{fg=ZooplusGrey,bg=ZooplusSeriesGreen2}
+\setbeamercolor{palette tertiary}{fg=ZooplusGrey,bg=ZooplusSeriesGreen1}
+\setbeamercolor{palette quaternary}{fg=ZooplusGrey,bg=ZooplusGreen}
 \setbeamercolor{titlelike}{parent=palette quaternary}
-\setbeamercolor{block title}{fg=ZooplusBlue,bg=ZooplusGreen}
-\setbeamercolor{block title alerted}{use=alerted text,fg=ZooplusBlue,bg=alerted text.fg!75!bg}
-\setbeamercolor{block title example}{use=example text,fg=ZooplusBlue,bg=example text.fg!75!bg}
-\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!25!bg}
+\setbeamercolor{block title}{fg=ZooplusGrey,bg=ZooplusGreen}
+\setbeamercolor{block title alerted}{use=alerted text,fg=ZooplusGrey,bg=alerted text.fg!75!bg}
+\setbeamercolor{block title example}{use=example text,fg=ZooplusGrey,bg=example text.fg!75!bg}
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!25!bg,fg=ZooplusGrey}
 \setbeamercolor{block body alerted}{parent=normal text,use=block title alerted,bg=block title alerted.bg!25!bg}
 \setbeamercolor{block body example}{parent=normal text,use=block title example,bg=block title example.bg!25!bg}
 \setbeamercolor{sidebar}{bg=ZooplusGreen!70}
-\setbeamercolor{palette sidebar primary}{fg=ZooplusBlue}
-\setbeamercolor{palette sidebar secondary}{fg=ZooplusBlue!75}
-\setbeamercolor{palette sidebar tertiary}{fg=ZooplusBlue!75}
-\setbeamercolor{palette sidebar quaternary}{fg=ZooplusBlue}
+\setbeamercolor{palette sidebar primary}{fg=ZooplusGrey}
+\setbeamercolor{palette sidebar secondary}{fg=ZooplusGrey!90}
+\setbeamercolor{palette sidebar tertiary}{fg=ZooplusGrey!80}
+\setbeamercolor{palette sidebar quaternary}{fg=ZooplusGrey!70}
 \setbeamercolor*{separation line}{}
 \setbeamercolor*{fine separation line}{}
 \logo{\includegraphics[scale=0.25]{../../zooplus_logo.png}}
@@ -164,6 +168,12 @@ Formula:
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+\frametitle{Solution overview}
+\begin{tikzpicture}
+\end{tikzpicture}
+\end{frame}
+
 \frame[containsverbatim]{
 \frametitle{App}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
@@ -272,7 +282,7 @@ $\pi = 3.141592652589784499499528724894 \gets$ no wonder :)
 	ymin=0,
 	ymax=17,
 ]
-\addplot[color=ZooplusGreen!120, fill=ZooplusGreen!50] coordinates {(1,15.830) (2,6.871) (4,4.063) (8,3.668)};
+\addplot[color=ZooplusGreen, fill=ZooplusSeriesGreen2] coordinates {(1,15.830) (2,6.871) (4,4.063) (8,3.668)};
 \end{axis}
 \end{tikzpicture}
 %Execution times:\\
