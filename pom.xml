@@ -15,6 +15,8 @@
         <scala.version>2.10.3</scala.version>
         <akka.version>2.2.0</akka.version>
         <scala.async.version>0.9.0-M4</scala.async.version>
+        <spring.version>4.0.5.RELEASE</spring.version>
+        <hibernate.validation.version>5.1.1.Final</hibernate.validation.version>
     </properties>
 
 	<build>
@@ -92,6 +94,21 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>12.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate.validation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 </project>
