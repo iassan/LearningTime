@@ -1,8 +1,7 @@
-package com.zooplus.jacekb.learningTime.akka
+package com.zooplus.jacekb.learningTime.akka.pi
 
-import akka.actor.{ActorLogging, Actor}
-import com.zooplus.jacekb.learningTime.akka.common.{PiCalculator, Commons}
-import Commons.{Work, Result}
+import akka.actor.{Actor, ActorLogging}
+import com.zooplus.jacekb.learningTime.akka.pi.Commons.{Result, Work}
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,6 +25,6 @@ class Worker extends Actor with ActorLogging {
 	def receive = {
 		case Work(start, nrOfElements) ⇒
 			//log.info("Got Work(" + start + ", " + nrOfElements + ")")
-		sender ! Result(piCalculator.calculatePiFor(start, nrOfElements)) // perform the work
+			sender ! Result(piCalculator.calculatePiFor(start, nrOfElements)) // perform the work
 	}
 }

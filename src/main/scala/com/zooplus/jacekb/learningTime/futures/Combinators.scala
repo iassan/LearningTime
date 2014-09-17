@@ -1,13 +1,15 @@
 package com.zooplus.jacekb.learningTime.futures
 
-import scala.concurrent._
+import java.net.{InetSocketAddress, Proxy, URL}
 import java.util.Date
-import com.zooplus.jacekb.learningTime.akka.common.PiCalculator
-import scala.concurrent.duration._
-import ExecutionContext.Implicits.global
-import java.net.{InetSocketAddress, URL, Proxy}
-import scala.io.Source
+
+import com.zooplus.jacekb.learningTime.akka.pi.PiCalculator
+
 import scala.async.Async.async
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.io.Source
 
 /**
  * Created with IntelliJ IDEA.
@@ -71,4 +73,5 @@ object Combinators {
 			}
 		}
 	}
+
 }

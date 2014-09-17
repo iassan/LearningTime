@@ -1,7 +1,8 @@
-package com.zooplus.jacekb.learningTime.akka.common
+package com.zooplus.jacekb.learningTime.akka.pi
+
+import java.io.Serializable
 
 import scala.concurrent.duration.Duration
-import java.io.Serializable
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +14,7 @@ object Commons {
 
 	sealed trait PiMessage extends Serializable
 
-	case class Calculate extends PiMessage
+	case class Calculate() extends PiMessage
 
 	case class Work(start: Int, nrOfElements: Int) extends PiMessage
 

@@ -1,4 +1,4 @@
-package com.zooplus.jacekb.learningTime.akka.common
+package com.zooplus.jacekb.learningTime.akka.pi
 
 /**
  * Created with IntelliJ IDEA.

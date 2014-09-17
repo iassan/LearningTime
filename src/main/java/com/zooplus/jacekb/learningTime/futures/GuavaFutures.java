@@ -3,7 +3,7 @@ package com.zooplus.jacekb.learningTime.futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.zooplus.jacekb.learningTime.akka.common.PiCalculator;
+import com.zooplus.jacekb.learningTime.akka.pi.PiCalculator;
 import scala.Tuple2;
 import scala.math.BigDecimal;
 

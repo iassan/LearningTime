@@ -1,11 +1,13 @@
 package com.zooplus.jacekb.learningTime.futures
 
-import scala.concurrent._
 import java.util.Date
-import com.zooplus.jacekb.learningTime.akka.common.PiCalculator
-import scala.util.{Failure, Success, Try}
+
+import com.zooplus.jacekb.learningTime.akka.pi.PiCalculator
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent._
 import scala.concurrent.duration.Duration
+import scala.util.{Failure, Success, Try}
 
 /**
  * Created with IntelliJ IDEA.

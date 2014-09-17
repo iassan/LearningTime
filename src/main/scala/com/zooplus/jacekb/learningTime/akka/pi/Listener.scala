@@ -1,8 +1,7 @@
-package com.zooplus.jacekb.learningTime.akka
+package com.zooplus.jacekb.learningTime.akka.pi
 
 import akka.actor.Actor
-import com.zooplus.jacekb.learningTime.akka.common.Commons
-import Commons.PiApproximation
+import com.zooplus.jacekb.learningTime.akka.pi.Commons.PiApproximation
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,9 +1,8 @@
 package com.zooplus.jacekb.learningTime.akka.cluster
 
 import akka.actor._
-import com.zooplus.jacekb.learningTime.akka.common.Commons.Calculate
 import akka.cluster.Cluster
-import com.zooplus.jacekb.learningTime.akka.common.Commons.PiApproximation
+import com.zooplus.jacekb.learningTime.akka.pi.Commons.{Calculate, PiApproximation}
 
 /**
  * Created with IntelliJ IDEA.

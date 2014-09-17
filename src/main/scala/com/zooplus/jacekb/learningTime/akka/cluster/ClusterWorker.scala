@@ -1,9 +1,9 @@
 package com.zooplus.jacekb.learningTime.akka.cluster
 
-import akka.cluster.Cluster
 import akka.actor.{ActorSystem, Props}
-import com.zooplus.jacekb.learningTime.akka.common.Commons.Work
-import com.zooplus.jacekb.learningTime.akka.Worker
+import akka.cluster.Cluster
+import com.zooplus.jacekb.learningTime.akka.pi.Commons.Work
+import com.zooplus.jacekb.learningTime.akka.pi.{Commons, Worker}
 
 /**
  * Created with IntelliJ IDEA.

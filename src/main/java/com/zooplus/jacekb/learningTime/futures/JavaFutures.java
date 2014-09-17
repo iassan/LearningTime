@@ -1,6 +1,6 @@
 package com.zooplus.jacekb.learningTime.futures;
 
-import com.zooplus.jacekb.learningTime.akka.common.PiCalculator;
+import com.zooplus.jacekb.learningTime.akka.pi.PiCalculator;
 import scala.Tuple2;
 import scala.math.BigDecimal;
 
