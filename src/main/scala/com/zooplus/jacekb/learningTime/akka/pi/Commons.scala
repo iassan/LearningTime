@@ -1,7 +1,5 @@
 package com.zooplus.jacekb.learningTime.akka.pi
 
-import java.io.Serializable
-
 import scala.concurrent.duration.Duration
 
 /**

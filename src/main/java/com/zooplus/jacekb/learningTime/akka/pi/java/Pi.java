@@ -1,4 +1,4 @@
-package com.zooplus.jacekb.learningTime.akka;
+package com.zooplus.jacekb.learningTime.akka.pi.java;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;

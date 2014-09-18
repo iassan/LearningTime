@@ -1,8 +1,10 @@
 package com.zooplus.jacekb.learningTime.akka.pi
 
 import akka.actor._
-import com.zooplus.jacekb.learningTime.akka.Master
-import com.zooplus.jacekb.learningTime.akka.pi.Commons.Calculate
+import akka.routing.RoundRobinRouter
+import com.zooplus.jacekb.learningTime.akka.pi.Commons.{Calculate, PiApproximation, Result, Work}
+
+import scala.concurrent.duration._
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,33 +16,33 @@ object Pi extends App {
 
 	calculate(nrOfWorkers = 8, nrOfElements = 10000, nrOfMessages = 100000)
 
-	//	class Master(nrOfWorkers: Int,
-	//							 nrOfMessages: Int,
-	//							 nrOfElements: Int,
-	//							 listener: ActorRef) extends Actor {
-	//
-	//		var pi: BigDecimal = 0
-	//		var nrOfResults: Int = _
-	//		val start: Long = System.currentTimeMillis
-	//
-	//		val workerRouter = context.actorOf(
-	//			Props[Worker].withRouter(RoundRobinRouter(nrOfWorkers)), name = "workerRouter")
-	//
-	//		def receive = {
-	//			case Calculate ⇒
-	//				for (i ← 0 until nrOfMessages)
-	//					workerRouter ! Work(i * nrOfElements, nrOfElements)
-	//			case Result(value) ⇒
-	//				pi += value
-	//				nrOfResults += 1
-	//				if (nrOfResults == nrOfMessages) {
-	//					// Send the result to the listener
-	//					listener ! PiApproximation(pi, duration = (System.currentTimeMillis - start).millis)
-	//					// Stops this actor and all its supervised children
-	//					context.stop(self)
-	//				}
-	//		}
-	//	}
+	class Master(nrOfWorkers: Int,
+							 nrOfMessages: Int,
+							 nrOfElements: Int,
+							 listener: ActorRef) extends Actor {
+
+		var pi: BigDecimal = 0
+		var nrOfResults: Int = _
+		val start: Long = System.currentTimeMillis
+
+		val workerRouter = context.actorOf(
+			Props[Worker].withRouter(RoundRobinRouter(nrOfWorkers)), name = "workerRouter")
+
+		def receive = {
+			case Calculate ⇒
+				for (i ← 0 until nrOfMessages)
+					workerRouter ! Work(i * nrOfElements, nrOfElements)
+			case Result(value) ⇒
+				pi += value
+				nrOfResults += 1
+				if (nrOfResults == nrOfMessages) {
+					// Send the result to the listener
+					listener ! PiApproximation(pi, duration = (System.currentTimeMillis - start).millis)
+					// Stops this actor and all its supervised children
+					context.stop(self)
+				}
+		}
+	}
 
 	def calculate(nrOfWorkers: Int, nrOfElements: Int, nrOfMessages: Int) {
 		// Create an Akka system
@@ -56,6 +58,6 @@ object Pi extends App {
 			name = "master")
 
 		// start the calculation
-		master.tell(new Calculate, ActorRef.noSender)
+		master ! Calculate
 	}
 }

@@ -1,4 +1,4 @@
-package com.zooplus.jacekb.learningTime.akka;
+package com.zooplus.jacekb.learningTime.akka.pi.java;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
@@ -6,7 +6,6 @@ import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 import akka.routing.RoundRobinPool;
 import com.zooplus.jacekb.learningTime.akka.pi.Commons;
-import com.zooplus.jacekb.learningTime.akka.pi.Worker;
 import scala.concurrent.duration.Duration;
 import scala.math.BigDecimal;
 
