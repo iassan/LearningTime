@@ -3,7 +3,6 @@ package com.zooplus.jacekb.learningTime.akka.pi.java;
 import akka.actor.AbstractActor;
 import akka.japi.pf.ReceiveBuilder;
 import com.zooplus.jacekb.learningTime.akka.pi.Commons;
-import com.zooplus.jacekb.learningTime.akka.pi.PiCalculator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,6 +20,6 @@ public class Worker extends AbstractActor {
     }
 
     private void calculate(Commons.Work work) {
-        sender().tell(new Commons.Result(piCalculator.calculatePiFor(work.start(), work.nrOfElements())), self());
+        sender().tell(new Result(piCalculator.calculatePiFor(work.start(), work.nrOfElements())), self());
     }
 }

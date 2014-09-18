@@ -7,8 +7,8 @@ import akka.japi.pf.ReceiveBuilder;
 import akka.routing.RoundRobinPool;
 import com.zooplus.jacekb.learningTime.akka.pi.Commons;
 import scala.concurrent.duration.Duration;
-import scala.math.BigDecimal;
 
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,7 +21,7 @@ public class Master extends AbstractActor {
     private int nrOfMessages;
     private int nrOfElements;
     private ActorRef listener;
-    private BigDecimal pi = BigDecimal.valueOf(0l);
+    private BigDecimal pi = BigDecimal.ZERO;
     private int nrOfResults = 0;
     private long start = System.currentTimeMillis();
     private ActorRef workerRouter;
@@ -33,16 +33,16 @@ public class Master extends AbstractActor {
         workerRouter = getContext().actorOf(new RoundRobinPool(nrOfWorkers).props(Props.create(Worker.class)), "workerRouter");
         receive(ReceiveBuilder.
                 match(Commons.Calculate.class, this::calculate).
-                match(Commons.Result.class, this::result).
+                match(Result.class, this::result).
                 build());
     }
 
-    private void result(Commons.Result result) {
-        pi = pi.$plus(result.value());
+    private void result(Result result) {
+        pi = pi.add(result.getValue());
         nrOfResults++;
         if (nrOfResults == nrOfMessages) {
             Duration duration = Duration.create(System.currentTimeMillis() - start, TimeUnit.MILLISECONDS);
-            listener.tell(new Commons.PiApproximation(pi, duration), self());
+            listener.tell(new PiApproximation(pi, duration), self());
             getContext().stop(self());
         }
     }
