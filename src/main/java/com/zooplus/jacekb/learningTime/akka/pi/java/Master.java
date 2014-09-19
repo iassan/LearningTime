@@ -5,11 +5,8 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 import akka.routing.RoundRobinPool;
-import com.zooplus.jacekb.learningTime.akka.pi.Commons;
-import scala.concurrent.duration.Duration;
 
 import java.math.BigDecimal;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +29,7 @@ public class Master extends AbstractActor {
         this.listener = listener;
         workerRouter = getContext().actorOf(new RoundRobinPool(nrOfWorkers).props(Props.create(Worker.class)), "workerRouter");
         receive(ReceiveBuilder.
-                match(Commons.Calculate.class, this::calculate).
+                match(Calculate.class, this::calculate).
                 match(Result.class, this::result).
                 build());
     }
@@ -41,15 +38,15 @@ public class Master extends AbstractActor {
         pi = pi.add(result.getValue());
         nrOfResults++;
         if (nrOfResults == nrOfMessages) {
-            Duration duration = Duration.create(System.currentTimeMillis() - start, TimeUnit.MILLISECONDS);
+            Long duration = System.currentTimeMillis() - start;
             listener.tell(new PiApproximation(pi, duration), self());
             getContext().stop(self());
         }
     }
 
-    private void calculate(Commons.Calculate calculate) {
+    private void calculate(Calculate calculate) {
         for (int i = 0; i < nrOfMessages; i++) {
-            workerRouter.tell(new Commons.Work(i * nrOfElements, nrOfElements), self());
+            workerRouter.tell(new Work(i * nrOfElements, nrOfElements), self());
         }
     }
 }

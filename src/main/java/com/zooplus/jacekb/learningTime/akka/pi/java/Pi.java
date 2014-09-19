@@ -3,7 +3,6 @@ package com.zooplus.jacekb.learningTime.akka.pi.java;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import com.zooplus.jacekb.learningTime.akka.pi.Commons;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,6 +21,6 @@ public class Pi {
         ActorSystem system = ActorSystem.create("PiSystem");
         ActorRef listener = system.actorOf(Props.create(Listener.class), "listener");
         ActorRef master = system.actorOf(Props.create(Master.class, nrOfWorkers, nrOfMessages, nrOfElements, listener), "master");
-        master.tell(new Commons.Calculate(), ActorRef.noSender());
+        master.tell(new Calculate(), ActorRef.noSender());
     }
 }

@@ -15,7 +15,7 @@ public class Listener extends AbstractActor {
     }
 
     private void piApproximation(PiApproximation piApproximation) {
-        System.out.println("\n\tPi approximation: \t" + piApproximation.getPi() + "\n\tCalculation time: \t" + piApproximation.getDuration());
+        System.out.println("\n\tPi approximation: \t" + piApproximation.getPi() + "\n\tCalculation time: \t" + piApproximation.getDuration() + " ms");
         getContext().system().shutdown();
     }
 }

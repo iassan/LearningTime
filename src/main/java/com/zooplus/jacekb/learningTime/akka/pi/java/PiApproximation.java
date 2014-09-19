@@ -1,7 +1,5 @@
 package com.zooplus.jacekb.learningTime.akka.pi.java;
 
-import scala.concurrent.duration.Duration;
-
 import java.math.BigDecimal;
 
 /**
@@ -12,9 +10,9 @@ import java.math.BigDecimal;
  */
 public class PiApproximation {
     private BigDecimal pi;
-    private Duration duration;
+    private Long duration;
 
-    public PiApproximation(BigDecimal pi, Duration duration) {
+    public PiApproximation(BigDecimal pi, Long duration) {
         this.pi = pi;
         this.duration = duration;
     }
@@ -23,7 +21,7 @@ public class PiApproximation {
         return pi;
     }
 
-    public Duration getDuration() {
+    public Long getDuration() {
         return duration;
     }
 }
