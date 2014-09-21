@@ -9,6 +9,7 @@
 \usepackage{pgfplots}
 \usepackage{svg}
 \usepackage{graphicx}
+\usepackage{tabularx}
 
 \useinnertheme[shadow]{rounded}
 \useoutertheme[right,width=2cm,hideothersubsections]{sidebar}
@@ -136,85 +137,139 @@ Formula:
 \frame[containsverbatim]{
 \frametitle{App}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
-def calculate(workersNo: Int, elementsNo: Int, messagesNo: Int) {
+public static void main(String[] args) {
+	Pi pi = new Pi();
+	pi.calculate(8, 10000, 100000);
+}
+
+void calculate(int nrOfWorkers, int nrOfElements, int nrOfMessages) {
 	// Create an Akka system
-	val system = ActorSystem("PiSystem")
+	ActorSystem system = ActorSystem.create("PiSystem");
 
 	// create the result listener, which will print the result and
 	// shutdown the system
-	val listener = system.actorOf(Props[Listener], name = "listener")
+	ActorRef listener = system.actorOf(
+		Props.create(Listener.class), "listener");
 
 	// create the master
-	val master = system.actorOf(Props(new Master(
-		workersNo, messagesNo, elementsNo, listener)),
-		name = "master")
+	ActorRef master = system.actorOf(Props.create(Master.class,
+		nrOfWorkers, nrOfMessages, nrOfElements, listener),
+		"master");
 
 	// start the calculation
-	master ! Calculate
+	master.tell(new Calculate(), ActorRef.noSender());
 }
-
-calculate(workersNo = 4, elementsNo = 10000, messagesNo = 100000)
 \end{Verbatim}
 }
 
 \frame[containsverbatim]{
 \frametitle{Listener}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
-class Listener extends Actor {
-def receive = {
-	case PiApproximation(pi, duration) =>
-		println(s"\tPi approximation: \t$pi)
-		println(s"\tCalculation time: \t$duration")
-		context.system.shutdown()
+public class Listener extends AbstractActor {
+
+public Listener() {
+	receive(ReceiveBuilder.match(
+		PiApproximation.class, this::piApproximation).
+		build());
+}
+
+void piApproximation(PiApproximation piApproximation) {
+	System.out.println("\n\tPi approximation: \t" +
+		piApproximation.getPi() +
+		"\n\tCalculation time: \t" +
+		piApproximation.getDuration() + " ms");
+	getContext().system().shutdown();
 }}
 \end{Verbatim}
 }
 
 \frame[containsverbatim]{
-\frametitle{Master}
-\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
-class Master extends Actor {
+\frametitle{Master, part 1}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
+public class Master extends AbstractActor {
 
-var pi: BigDecimal = 0
-val start: Long = System.currentTimeMillis
-var nrOfResults: Int = _
-val workerRouter = context.actorOf(
-	Props[Worker].withRouter(RoundRobinRouter(nrOfWorkers)),
-		name = "workerRouter")
+private ActorRef workerRouter;
 
-def receive = {
-	case Calculate =>
-		for (i <- 0 until nrOfMessages)
-			workerRouter ! Work(i * nrOfElements, nrOfElements)
-	case Result(value) =>
-		pi += value
-		nrOfResults += 1
-		if (nrOfResults == nrOfMessages) {
-			// Send the result to the listener
-			listener ! PiApproximation(pi,
-					duration = (System.currentTimeMillis - start).millis)
-			context.stop(self) // Stops this actor and all its children
-		}
-}}
+public Master(int nrOfWorkers, int nrOfMessages,
+		int nrOfElements, ActorRef listener) {
+	...
+	workerRouter = getContext().actorOf(
+		new RoundRobinPool(nrOfWorkers).props(
+		Props.create(Worker.class)), "workerRouter");
+	receive(ReceiveBuilder.
+		match(Calculate.class, this::calculate).
+		match(Result.class, this::result).
+		build());
+}
+...
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{Master, part 2}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.75},tabsize=2]
+private BigDecimal pi = BigDecimal.ZERO;
+private int nrOfResults = 0;
+private long start = System.currentTimeMillis();
+private ActorRef workerRouter;
+
+private void calculate(Calculate calculate) {
+	for (int i = 0; i < nrOfMessages; i++) {
+		workerRouter.tell(new Work(i * nrOfElements, nrOfElements),
+			self());
+	}
+}
+
+private void result(Result result) {
+	pi = pi.add(result.getValue());
+	nrOfResults++;
+	if (nrOfResults == nrOfMessages) {
+		Long duration = System.currentTimeMillis() - start;
+		listener.tell(new PiApproximation(pi, duration), self());
+		getContext().stop(self());
+	}
+}
 \end{Verbatim}
 }
 
 \frame[containsverbatim]{
 \frametitle{Worker}
-\begin{Verbatim}[obeytabs=true,fontsize=\relsize{-2},tabsize=2]
-class Worker extends Actor {
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
+public class Worker extends AbstractActor {
 
-def calculatePiFor(start: Int, nrOfElements: Int): BigDecimal = {
-	var acc = 0.0
-	for (i <- start until (start + nrOfElements))
-		acc += 4.0 * (1 - (i % 2) * 2) / (2 * i + 1)
-	acc
+private PiCalculator piCalculator;
+
+public Worker() {
+	receive(ReceiveBuilder.match(
+			Work.class, this::calculate).build());
+	piCalculator = new PiCalculator();
 }
 
-def receive = {
-	case Work(start, nrOfElements) =>
-		// perform the work
-		sender ! Result(calculatePiFor(start, nrOfElements))
+private void calculate(Work work) {
+	BigDecimal value = piCalculator.calculatePiFor(
+			work.getStart(), work.getNrOfElements());
+	sender().tell(new Result(value), self());
+}}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{PiCalculator}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
+public class PiCalculator {
+
+private static final MathContext MATH_CONTEXT =
+		MathContext.DECIMAL128;
+
+BigDecimal calculatePiFor(int start, int nrOfElements) {
+	BigDecimal acc = BigDecimal.ZERO;
+	for (int i = start; i < start + nrOfElements; i++) {
+		acc = acc.add(new BigDecimal(4).multiply(
+				new BigDecimal(1 - i % 2 * 2)).divide(
+				new BigDecimal(2 * i + 1), MATH_CONTEXT));
+	}
+	return acc;
 }}
 \end{Verbatim}
 }
@@ -255,10 +310,28 @@ $\pi = 3.141592652589784499499528724894 \gets$ no wonder :)
 \section{Problem: PackageBuilder}
 
 \begin{frame}
+\frametitle{PackageBuilder -- design}
 \begin{figure}
 %\includesvg[width=\textwidth,pretex=\relscale{0.03}]{PB}
 \includegraphics[width=\textwidth]{PB}
 \end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Results}
+\scriptsize{
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\begin{tabularx}{\textwidth}{|R|R|R||R|}
+\hline
+Threads in pool & Number of PackerActors & Number of SolutionGeneratorActors per PackerActor & Total running time (ms)\\
+\hline
+1 & 1 & 1 & 234 183\\
+4 & 2 & 2 & 62 957\\
+12 & 4 & 4 & 23 538\\
+16 & 4 & 4 & 23 698\\
+16 & 16 & 16 & 19 783\\
+\hline
+\end{tabularx}}
 \end{frame}
 
 \section{Why all that?}

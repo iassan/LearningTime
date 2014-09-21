@@ -18,7 +18,7 @@ public class Master extends AbstractActor {
     private int nrOfMessages;
     private int nrOfElements;
     private ActorRef listener;
-    private BigDecimal pi = BigDecimal.ZERO;
+    private BigDecimal π = BigDecimal.ZERO;
     private int nrOfResults = 0;
     private long start = System.currentTimeMillis();
     private ActorRef workerRouter;
@@ -35,11 +35,11 @@ public class Master extends AbstractActor {
     }
 
     private void result(Result result) {
-        pi = pi.add(result.getValue());
+	    π = π.add(result.getValue());
         nrOfResults++;
         if (nrOfResults == nrOfMessages) {
             Long duration = System.currentTimeMillis() - start;
-            listener.tell(new PiApproximation(pi, duration), self());
+            listener.tell(new PiApproximation(π, duration), self());
             getContext().stop(self());
         }
     }

@@ -3,6 +3,8 @@ package com.zooplus.jacekb.learningTime.akka.pi.java;
 import akka.actor.AbstractActor;
 import akka.japi.pf.ReceiveBuilder;
 
+import java.math.BigDecimal;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jacek_bilski
@@ -19,6 +21,7 @@ public class Worker extends AbstractActor {
     }
 
     private void calculate(Work work) {
-        sender().tell(new Result(piCalculator.calculatePiFor(work.getStart(), work.getNrOfElements())), self());
+	    BigDecimal value = piCalculator.calculatePiFor(work.getStart(), work.getNrOfElements());
+	    sender().tell(new Result(value), self());
     }
 }
