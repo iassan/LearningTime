@@ -1,8 +1,8 @@
 all: clean
 	pdflatex show.tex
-	pdflatex show.tex
-	thumbpdf show
-	pdflatex show.tex
+#	pdflatex show.tex
+#	thumbpdf show
+#	pdflatex show.tex
 	mv show.pdf Akka.pdf
 
 clean:

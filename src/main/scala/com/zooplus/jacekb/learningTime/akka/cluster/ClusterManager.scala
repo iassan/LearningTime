@@ -3,6 +3,7 @@ package com.zooplus.jacekb.learningTime.akka.cluster
 import akka.actor.{ActorLogging, Actor, Props, ActorSystem}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.{ClusterDomainEvent, UnreachableMember, MemberUp, CurrentClusterState}
+import com.zooplus.jacekb.learningTime.akka.pi.Commons.Calculate
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,5 +29,7 @@ object ClusterManager {
 		val cluster = Cluster(system)
 		cluster.subscribe(clusterListener, classOf[ClusterDomainEvent])
 		val manager = system.actorOf(Props[Manager], name = "manager")
+		Thread.sleep(10000)
+		manager ! Calculate
 	}
 }

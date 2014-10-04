@@ -34,9 +34,9 @@ class Manager extends Actor with ActorLogging {
 	// re-subscribe when restart
 	override def preStart() {
 		log.info("Manager subscribing to messages")
-		cluster.subscribe(self, classOf[MemberUp])
-		cluster.subscribe(self, classOf[Calculate])
-		cluster.subscribe(self, classOf[Result])
+//		cluster.subscribe(self, classOf[MemberUp])
+//		cluster.subscribe(self, classOf[Calculate])
+//		cluster.subscribe(self, classOf[Result])
 	}
 
 	override def postStop() {
@@ -49,8 +49,9 @@ class Manager extends Actor with ActorLogging {
 			start = System.currentTimeMillis
 			clusterClient = sender
 			for (i ← 0 until nrOfMessages)
-				workerRouter ! ConsistentHashableEnvelope(Work(i * nrOfElements, nrOfElements), "pi")
+				workerRouter ! ConsistentHashableEnvelope(Work(i * nrOfElements, nrOfElements), i)
 		case Result(value) ⇒
+			log.info("Got result")
 			pi += value
 			nrOfResults += 1
 			if (nrOfResults == nrOfMessages) {

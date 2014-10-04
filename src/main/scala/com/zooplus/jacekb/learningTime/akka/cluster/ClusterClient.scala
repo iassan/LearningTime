@@ -31,12 +31,16 @@ object ClusterClient {
 		//		cluster.subscribe(clusterListener, classOf[ClusterDomainEvent])
 		val client = system.actorOf(Props[Client], name = "client")
 		cluster.subscribe(client, classOf[PiApproximation])
-		val manager = system.actorOf(Props[Manager], name = "manager")
-		cluster.registerOnMemberUp(manager ! Calculate)
+		val manager = system.actorSelection("/user/manager")
+		//cluster.registerOnMemberUp(manager ! Calculate)
+		Thread.sleep(2000)
+		manager ! Calculate
 		println("Sent calculate message")
 	}
 
 	class Client extends Actor with ActorLogging {
+
+		val role = "client"
 
 		def receive = {
 			case PiApproximation(pi, duration) ⇒
