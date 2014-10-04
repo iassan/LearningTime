@@ -1,8 +1,6 @@
 package com.zooplus.jacekb.learningTime.akka.cluster
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.cluster.Cluster
-import akka.cluster.ClusterEvent.MemberUp
 import akka.routing.ConsistentHashingRouter.ConsistentHashableEnvelope
 import akka.routing.FromConfig
 import com.zooplus.jacekb.learningTime.akka.pi.Commons.{Calculate, PiApproximation, Result, Work}
@@ -18,8 +16,6 @@ import scala.concurrent.duration._
  */
 class Manager extends Actor with ActorLogging {
 
-	val cluster = Cluster(context.system)
-
 	val workerRouter = context.actorOf(FromConfig.props(Props[Worker]), name = "workerRouter")
 
 	var pi: BigDecimal = 0
@@ -33,25 +29,9 @@ class Manager extends Actor with ActorLogging {
 
 	self ! Calculate
 
-	// subscribe to cluster changes, MemberUp
-	// re-subscribe when restart
-	override def preStart() {
-		log.info("Manager subscribing to messages")
-		cluster.subscribe(self, classOf[Calculate])
-		cluster.subscribe(self, classOf[Result])
-//		cluster.subscribe(self, classOf[MemberUp])
-//		cluster.subscribe(self, classOf[Calculate])
-//		cluster.subscribe(self, classOf[Result])
-	}
-
-	override def postStop() {
-		cluster.unsubscribe(self)
-	}
-
 	def receive = {
 		case Calculate ⇒
 			log.info("Got Calculate message")
-			log.info(s"workerRouter: $workerRouter")
 			start = System.currentTimeMillis
 			clusterClient = sender()
 			for (i ← 0 until nrOfMessages)
