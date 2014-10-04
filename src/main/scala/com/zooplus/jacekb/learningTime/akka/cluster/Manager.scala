@@ -17,23 +17,28 @@ import scala.concurrent.duration._
  * Time: 10:02
  */
 class Manager extends Actor with ActorLogging {
-	val workerRouter = context.actorOf(Props[Worker].withRouter(FromConfig), name = "workerRouter")
 
-	val role = "manager"
+	val cluster = Cluster(context.system)
+
+	val workerRouter = context.actorOf(FromConfig.props(Props[Worker]), name = "workerRouter")
 
 	var pi: BigDecimal = 0
 	var nrOfResults: Int = _
 	var start: Long = System.currentTimeMillis
 	var clusterClient: ActorRef = null
-	val nrOfElements = 1000000
-	val nrOfMessages = 10000
+	val nrOfElements = 1000
+	val nrOfMessages = 10
 
-	val cluster = Cluster(context.system)
+	Thread.sleep(10000)
+
+	self ! Calculate
 
 	// subscribe to cluster changes, MemberUp
 	// re-subscribe when restart
 	override def preStart() {
 		log.info("Manager subscribing to messages")
+		cluster.subscribe(self, classOf[Calculate])
+		cluster.subscribe(self, classOf[Result])
 //		cluster.subscribe(self, classOf[MemberUp])
 //		cluster.subscribe(self, classOf[Calculate])
 //		cluster.subscribe(self, classOf[Result])
@@ -46,8 +51,9 @@ class Manager extends Actor with ActorLogging {
 	def receive = {
 		case Calculate ⇒
 			log.info("Got Calculate message")
+			log.info(s"workerRouter: $workerRouter")
 			start = System.currentTimeMillis
-			clusterClient = sender
+			clusterClient = sender()
 			for (i ← 0 until nrOfMessages)
 				workerRouter ! ConsistentHashableEnvelope(Work(i * nrOfElements, nrOfElements), i)
 		case Result(value) ⇒

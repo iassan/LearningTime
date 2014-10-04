@@ -3,6 +3,7 @@ package com.zooplus.jacekb.learningTime.akka.cluster
 import akka.actor._
 import akka.cluster.Cluster
 import com.zooplus.jacekb.learningTime.akka.pi.Commons.{Calculate, PiApproximation}
+import com.typesafe.config.ConfigFactory
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,8 +14,10 @@ import com.zooplus.jacekb.learningTime.akka.pi.Commons.{Calculate, PiApproximati
 object ClusterClient {
 
 	def main(args: Array[String]) {
+
+		val config = ConfigFactory.load("clusterClient")
 		// Create an Akka system
-		val system = ActorSystem("ClusterSystem")
+		val system = ActorSystem("ClusterSystem", config)
 
 		//		val clusterListener = system.actorOf(Props(new Actor with ActorLogging {
 		//			def receive = {
@@ -27,20 +30,30 @@ object ClusterClient {
 		//				case _: ClusterDomainEvent ⇒ // ignore
 		//			}
 		//		}), name = "clusterListener")
-		val cluster = Cluster(system)
 		//		cluster.subscribe(clusterListener, classOf[ClusterDomainEvent])
 		val client = system.actorOf(Props[Client], name = "client")
-		cluster.subscribe(client, classOf[PiApproximation])
-		val manager = system.actorSelection("/user/manager")
 		//cluster.registerOnMemberUp(manager ! Calculate)
-		Thread.sleep(2000)
-		manager ! Calculate
-		println("Sent calculate message")
 	}
 
 	class Client extends Actor with ActorLogging {
 
 		val role = "client"
+
+		val cluster = Cluster(context.system)
+
+		val manager = context.actorSelection("/user/manager")
+
+		Thread.sleep(2000)
+		manager ! Calculate
+		println("Sent calculate message")
+
+		override def preStart(): Unit = {
+			cluster.subscribe(self, classOf[PiApproximation])
+		}
+
+		override def postStop() {
+			cluster.unsubscribe(self)
+		}
 
 		def receive = {
 			case PiApproximation(pi, duration) ⇒

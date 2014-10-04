@@ -2,6 +2,7 @@ package com.zooplus.jacekb.learningTime.akka.pi
 
 import akka.actor.{Actor, ActorLogging}
 import com.zooplus.jacekb.learningTime.akka.pi.Commons.{Result, Work}
+import akka.cluster.Cluster
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,9 +18,15 @@ class Worker extends Actor with ActorLogging {
 	val role = "worker"
 
 	val piCalculator = new PiCalculator
+	val cluster = Cluster(context.system)
 
 	override def preStart() {
 		log.info("Worker starting")
+		cluster.subscribe(self, classOf[Work])
+	}
+
+	override def postStop() {
+		cluster.unsubscribe(self)
 	}
 
 	def receive = {

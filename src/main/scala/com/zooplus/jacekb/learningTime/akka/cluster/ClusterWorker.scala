@@ -26,9 +26,7 @@ object ClusterWorker {
 		//				case _: ClusterDomainEvent ⇒ // ignore
 		//			}
 		//		}), name = "clusterListener")
-		val cluster = Cluster(system)
 		//		cluster.subscribe(clusterListener, classOf[ClusterDomainEvent])
 		val worker = system.actorOf(Props[Worker], name = "worker")
-		cluster.subscribe(worker, classOf[Work])
 	}
 }
