@@ -40,6 +40,8 @@ class Manager extends Actor with ActorLogging {
 				log.info(s"Got all results, sending back to $clusterClient")
 				// Send the result to the listener
 				clusterClient ! PiApproximation(pi, duration = (System.currentTimeMillis - start).millis)
+				nrOfResults = 0
+				pi = 0
 				// Stops this actor and all its supervised children
 				//context.stop(self)
 			}

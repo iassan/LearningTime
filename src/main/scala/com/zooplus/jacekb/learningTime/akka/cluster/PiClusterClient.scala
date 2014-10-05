@@ -21,12 +21,11 @@ object PiClusterClient {
 
 	class Client extends Actor with ActorLogging {
 
-//		val manager = context.actorSelection("/user/manager")
 		val initialContacts = Set(context.actorSelection("akka.tcp://ClusterSystem@localhost:2553/user/receptionist"))
 
-		val c = context.actorOf(ClusterClient.props(initialContacts))
-		c ! ClusterClient.Send("/user/manager", Calculate, localAffinity = true)
-		println("Sent calculate message")
+		val clusterClient = context.actorOf(ClusterClient.props(initialContacts))
+
+		clusterClient ! ClusterClient.Send("/user/manager", Calculate, localAffinity = true)
 
 		def receive = {
 			case PiApproximation(pi, duration) ⇒
