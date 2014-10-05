@@ -12,7 +12,7 @@ import akka.contrib.pattern.ClusterReceptionistExtension
 object ClusterManager {
 	def main(args: Array[String]) {
 		System.setProperty("akka.remote.netty.tcp.port", "2553")
-		val system = ActorSystem("ClusterSystem")
+		val system = ActorSystem("PiClusterSystem")
 		val manager = system.actorOf(Props[Manager], name = "manager")
 		ClusterReceptionistExtension(system).registerService(manager)
 	}

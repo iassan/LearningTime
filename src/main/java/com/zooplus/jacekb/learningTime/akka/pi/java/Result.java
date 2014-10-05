@@ -1,5 +1,6 @@
 package com.zooplus.jacekb.learningTime.akka.pi.java;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -8,7 +9,7 @@ import java.math.BigDecimal;
  * Date: 18.09.14
  * Time: 14:51
  */
-public class Result {
+public class Result implements Serializable {
     private BigDecimal value;
 
     public Result(BigDecimal value) {

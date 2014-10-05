@@ -12,7 +12,7 @@ import com.zooplus.jacekb.learningTime.akka.pi.Worker
 object ClusterWorker {
 
 	def main(args: Array[String]) {
-		val system = ActorSystem("ClusterSystem")
+		val system = ActorSystem("PiClusterSystem")
 		system.actorOf(Props[Worker], name = "worker")
 	}
 }

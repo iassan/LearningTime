@@ -14,7 +14,7 @@ import java.math.BigDecimal;
  * Date: 17.09.14
  * Time: 09:38
  */
-public class Master extends AbstractActor {
+public class Manager extends AbstractActor {
     private int nrOfMessages;
     private int nrOfElements;
     private ActorRef listener;
@@ -23,7 +23,7 @@ public class Master extends AbstractActor {
     private long start = System.currentTimeMillis();
     private ActorRef workerRouter;
 
-    public Master(int nrOfWorkers, int nrOfMessages, int nrOfElements, ActorRef listener) {
+    public Manager(int nrOfWorkers, int nrOfMessages, int nrOfElements, ActorRef listener) {
         this.nrOfMessages = nrOfMessages;
         this.nrOfElements = nrOfElements;
         this.listener = listener;
@@ -48,5 +48,6 @@ public class Master extends AbstractActor {
         for (int i = 0; i < nrOfMessages; i++) {
             workerRouter.tell(new Work(i * nrOfElements, nrOfElements), self());
         }
+	    listener = sender();    // new in cluster
     }
 }

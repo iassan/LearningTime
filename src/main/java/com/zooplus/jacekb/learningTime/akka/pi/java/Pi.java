@@ -20,7 +20,7 @@ public class Pi {
     private void calculate(int nrOfWorkers, int nrOfElements, int nrOfMessages) {
         ActorSystem system = ActorSystem.create("PiSystem");
         ActorRef listener = system.actorOf(Props.create(Listener.class), "listener");
-        ActorRef master = system.actorOf(Props.create(Master.class, nrOfWorkers, nrOfMessages, nrOfElements, listener), "master");
-        master.tell(new Calculate(), ActorRef.noSender());
+        ActorRef manager = system.actorOf(Props.create(Manager.class, nrOfWorkers, nrOfMessages, nrOfElements, listener), "manager");
+        manager.tell(new Calculate(), ActorRef.noSender());
     }
 }

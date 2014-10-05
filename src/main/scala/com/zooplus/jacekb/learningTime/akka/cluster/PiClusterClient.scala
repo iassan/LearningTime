@@ -15,13 +15,13 @@ object PiClusterClient {
 
 	def main(args: Array[String]) {
 		val config = ConfigFactory.load("clusterClient")
-		val system = ActorSystem("ClusterSystem", config)
+		val system = ActorSystem("PiClusterSystem", config)
 		system.actorOf(Props[Client], name = "client")
 	}
 
 	class Client extends Actor with ActorLogging {
 
-		val initialContacts = Set(context.actorSelection("akka.tcp://ClusterSystem@localhost:2553/user/receptionist"))
+		val initialContacts = Set(context.actorSelection("akka.tcp://PiClusterSystem@localhost:2553/user/receptionist"))
 
 		val clusterClient = context.actorOf(ClusterClient.props(initialContacts))
 
