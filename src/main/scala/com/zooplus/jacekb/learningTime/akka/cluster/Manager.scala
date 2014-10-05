@@ -25,10 +25,6 @@ class Manager extends Actor with ActorLogging {
 	val nrOfElements = 1000
 	val nrOfMessages = 10
 
-	Thread.sleep(10000)
-
-	self ! Calculate
-
 	def receive = {
 		case Calculate ⇒
 			log.info("Got Calculate message")
@@ -41,6 +37,7 @@ class Manager extends Actor with ActorLogging {
 			pi += value
 			nrOfResults += 1
 			if (nrOfResults == nrOfMessages) {
+				log.info(s"Got all results, sending back to $clusterClient")
 				// Send the result to the listener
 				clusterClient ! PiApproximation(pi, duration = (System.currentTimeMillis - start).millis)
 				// Stops this actor and all its supervised children

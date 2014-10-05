@@ -1,6 +1,7 @@
 package com.zooplus.jacekb.learningTime.akka.cluster
 
 import akka.actor.{Props, ActorSystem}
+import akka.contrib.pattern.ClusterReceptionistExtension
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +13,7 @@ object ClusterManager {
 	def main(args: Array[String]) {
 		System.setProperty("akka.remote.netty.tcp.port", "2553")
 		val system = ActorSystem("ClusterSystem")
-		system.actorOf(Props[Manager], name = "manager")
+		val manager = system.actorOf(Props[Manager], name = "manager")
+		ClusterReceptionistExtension(system).registerService(manager)
 	}
 }
