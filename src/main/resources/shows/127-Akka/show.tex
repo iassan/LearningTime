@@ -41,6 +41,9 @@
 \setbeamercolor*{fine separation line}{}
 \logo{\includegraphics[scale=0.25]{../../zooplus_logo.png}}
 
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{ZooplusSeriesGreen1}{#1}}
+
 \usefonttheme{default}
 \setbeamercovered{transparent}
 \title{Akka -- actors system for Scala \& Java}
@@ -151,13 +154,13 @@ void calculate(int nrOfWorkers, int nrOfElements, int nrOfMessages) {
 	ActorRef listener = system.actorOf(
 		Props.create(Listener.class), "listener");
 
-	// create the master
-	ActorRef master = system.actorOf(Props.create(Master.class,
+	// create the manager
+	ActorRef manager = system.actorOf(Props.create(Manager.class,
 		nrOfWorkers, nrOfMessages, nrOfElements, listener),
-		"master");
+		"manager");
 
 	// start the calculation
-	master.tell(new Calculate(), ActorRef.noSender());
+	manager.tell(new Calculate(), ActorRef.noSender());
 }
 \end{Verbatim}
 }
@@ -184,13 +187,13 @@ void piApproximation(PiApproximation piApproximation) {
 }
 
 \frame[containsverbatim]{
-\frametitle{Master, part 1}
+\frametitle{Manager, part 1}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
-public class Master extends AbstractActor {
+public class Manager extends AbstractActor {
 
 private ActorRef workerRouter;
 
-public Master(int nrOfWorkers, int nrOfMessages,
+public Manager(int nrOfWorkers, int nrOfMessages,
 		int nrOfElements, ActorRef listener) {
 	...
 	workerRouter = getContext().actorOf(
@@ -207,7 +210,7 @@ public Master(int nrOfWorkers, int nrOfMessages,
 }
 
 \frame[containsverbatim]{
-\frametitle{Master, part 2}
+\frametitle{Manager, part 2}
 \begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.75},tabsize=2]
 private BigDecimal pi = BigDecimal.ZERO;
 private int nrOfResults = 0;
@@ -307,6 +310,185 @@ $\pi = 3.141592652589784499499528724894 \gets$ no wonder :)
 \end{frame}
 
 
+\subsection{Calculating in cluster}
+
+\begin{frame}
+\frametitle{Calculating $\pi$ in a cluster}
+When one JVM is not enough, because one or more of:
+\begin{itemize}
+\item scalability,
+\item performance,
+\item reliability,
+\item \ldots
+\end{itemize}
+then we can run Akka application in a cluster.
+\end{frame}
+
+\begin{frame}
+\frametitle{Basic idea}
+There's one calculation manager per cluster. It awaits for workers to join the cluster. It also awaits calculation requests, which will then be sent to all available workers and then final result sent to requester. It's the workers that are scattered across network and are joining and leaving the cluster dynamically.
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{application.conf}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+akka {
+	actor {
+		provider = "akka.cluster.ClusterActorRefProvider"
+		deployment {
+			/manager/workerRouter {
+				router = consistent-hashing-group
+				nr-of-instances = 10
+				routees.paths = ["/user/worker"]
+				cluster {
+					enabled = on
+					allow-local-routees = off
+	}}}}
+	remote {
+		log-remote-lifecycle-events = on
+		netty.tcp {
+			hostname = "localhost"
+			port = 0}}
+	cluster {
+		seed-nodes = ["akka.tcp://PiClusterSystem@localhost:2553"]
+		auto-down = on}
+	log-dead-letters = off
+	extensions = ["akka.contrib.pattern.ClusterReceptionistExtension"]
+}	
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{PiClusterClient, part 1}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
+public class PiClusterClient extends AbstractActor {
+
+public static void main(String[] args) {
+	ActorSystem system = ActorSystem.create("PiClusterSystem");
+	system.actorOf(Props.create(PiClusterClient.class),
+		"piClusterClient");
+}}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{PiClusterClient, part 2}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2]
+public class PiClusterClient extends AbstractActor {
+
+public PiClusterClient() {
+	Set<ActorSelection> initialContacts = new HashSet<>();
+	initialContacts.add(getContext().actorSelection(
+		"akka.tcp://PiClusterSystem@localhost:2553/user/receptionist"));
+	ActorRef clusterClient = getContext().actorOf(
+		ClusterClient.defaultProps(initialContacts));
+	clusterClient.tell(new ClusterClient.Send(
+		"/user/manager", new Calculate()), self());
+	receive(ReceiveBuilder.
+		match(PiApproximation.class, this::processResult).
+		build());
+}
+
+private void processResult(PiApproximation piApproximation) {
+	log.info("\n\tPi approximation: \t" +
+		piApproximation.getPi() +
+		"\n\tCalculation time: \t" +
+		piApproximation.getDuration() + " ms");
+	getContext().system().shutdown();
+}}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{ClusterManager, part 1}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2,commandchars=\\\[\]]
+public class \green[Cluster]Manager extends AbstractActor {
+
+private ActorRef workerRouter;
+
+public \green[Cluster]Manager(\red[int nrOfWorkers, ]int nrOfMessages,
+		int nrOfElements\red[, ActorRef listener]) {
+	...
+	workerRouter = getContext().actorOf(
+		\red[new RoundRobinPool(nrOfWorkers).props(]
+		\green[FromConfig.getInstance().props(]
+		Props.create(Worker.class)), "workerRouter");
+	receive(ReceiveBuilder.
+			match(Calculate.class, this::calculate).
+			match(Result.class, this::result).
+			build());
+}
+...
+}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{ClusterManager, part 2}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.7},tabsize=2,commandchars=\\\[\]]
+private BigDecimal pi = BigDecimal.ZERO;
+private int nrOfResults = 0;
+private long start\red[ = System.currentTimeMillis()];
+private ActorRef listener;
+
+private void calculate(Calculate calculate) {
+	\green[start = System.currentTimeMillis();]
+	for (int i = 0; i < nrOfMessages; i++) {
+		workerRouter.tell(
+			\green[new ConsistentHashingRouter.ConsistentHashableEnvelope(]
+			new Work(i * nrOfElements, nrOfElements), \green[i), ]self());}
+	\green[listener = sender();]
+}
+private void result(Result result) {
+	pi = pi.add(result.getValue());
+	nrOfResults++;
+	if (nrOfResults == nrOfMessages) {
+		Long duration = System.currentTimeMillis() - start;
+		listener.tell(new PiApproximation(pi, duration), self());
+		\red[getContext().stop(self());]
+		\green[nrOfResults = 0;]
+		\green[pi = BigDecimal.ZERO;]
+	}}
+\end{Verbatim}
+}
+
+\frame[containsverbatim]{
+\frametitle{RunManagerInCluster}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
+public class RunManagerInCluster {
+
+public static void main(String[] args) {
+	System.setProperty("akka.remote.netty.tcp.port", "2553");
+	ActorSystem system = ActorSystem.create("PiClusterSystem");
+	Integer nrOfMessages = 10;
+	Integer nrOfElements = 1000;
+	ActorRef manager = system.actorOf(Props.create(
+		ClusterManager.class, nrOfMessages, nrOfElements),
+		"manager");
+	ClusterReceptionistExtension.get(system).
+		registerService(manager);
+}}
+\end{Verbatim}
+}
+
+\begin{frame}
+\frametitle{Worker}
+Nothing has changed
+\end{frame}
+
+\frame[containsverbatim]{
+\frametitle{RunWorkerInCluster}
+\begin{Verbatim}[obeytabs=true,fontsize=\relscale{0.8},tabsize=2]
+public class RunWorkerInCluster {
+
+public static void main(String[] args) {
+	ActorSystem system = ActorSystem.create("PiClusterSystem");
+	system.actorOf(Props.create(Worker.class), "worker");
+}}
+\end{Verbatim}
+}
+
+
 \section{Problem: PackageBuilder}
 
 \begin{frame}
@@ -341,7 +523,7 @@ Threads in pool & Number of PackerActors & Number of SolutionGeneratorActors per
 \begin{itemize}
 \item Scalability (both horizontal and vertical)
 \item Fault tolerance -- hierarchies and supervision
-\item Load management -- back-off strategies, timeouts, processing isolation
+\item Load management -- back-off strategies, timeouts, processing isolation, load balancing
 \item Batch processing in a ''divide and conquer'' way
 \item Highly responsive systems
 \item Asynchronous message processing

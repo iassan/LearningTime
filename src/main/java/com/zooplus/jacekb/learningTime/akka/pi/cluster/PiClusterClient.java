@@ -5,8 +5,6 @@ import akka.contrib.pattern.ClusterClient;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.pf.ReceiveBuilder;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import com.zooplus.jacekb.learningTime.akka.pi.java.Calculate;
 import com.zooplus.jacekb.learningTime.akka.pi.java.PiApproximation;
 
@@ -23,8 +21,7 @@ public class PiClusterClient extends AbstractActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
 	public static void main(String[] args) {
-		Config config = ConfigFactory.load("clusterClient");
-		ActorSystem system = ActorSystem.create("PiClusterSystem", config);
+		ActorSystem system = ActorSystem.create("PiClusterSystem");
 		system.actorOf(Props.create(PiClusterClient.class), "piClusterClient");
 	}
 
