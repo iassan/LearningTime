@@ -1,6 +1,8 @@
 package com.zooplus.jacekb.learningTime.akka.pi.java;
 
 import akka.actor.AbstractActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import akka.japi.pf.ReceiveBuilder;
 
 import java.math.BigDecimal;
@@ -13,15 +15,18 @@ import java.math.BigDecimal;
  */
 public class Worker extends AbstractActor {
 
-    private PiCalculator piCalculator;
+	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    public Worker() {
-        receive(ReceiveBuilder.match(Work.class, this::calculate).build());
-        piCalculator = new PiCalculator();
-    }
+	private PiCalculator piCalculator;
 
-    private void calculate(Work work) {
-	    BigDecimal value = piCalculator.calculatePiFor(work.getStart(), work.getNrOfElements());
-	    sender().tell(new Result(value), self());
-    }
+	public Worker() {
+		receive(ReceiveBuilder.match(Work.class, this::calculate).build());
+		piCalculator = new PiCalculator();
+	}
+
+	private void calculate(Work work) {
+		log.info("Got Work(" + work.getStart() + ", " + work.getNrOfElements() + ")");
+		BigDecimal value = piCalculator.calculatePiFor(work.getStart(), work.getNrOfElements());
+		sender().tell(new Result(value), self());
+	}
 }
