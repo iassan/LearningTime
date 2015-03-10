@@ -109,16 +109,15 @@ public class OptionalUsages {
 		Consumer<Long> consumer = Mockito.mock(Consumer.class);
 
 		// when
-		present.ifPresent(consumer);
-
-		// then
-		then(consumer).should().accept(1l);
-
-		reset(consumer);
-		// when
 		absent.ifPresent(consumer);
 
 		// then
 		then(consumer).should(never()).accept(anyLong());
+
+		// when
+		present.ifPresent(consumer);
+
+		// then
+		then(consumer).should().accept(1l);
 	}
 }
