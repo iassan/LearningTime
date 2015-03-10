@@ -1,17 +1,17 @@
 package com.zooplus.jacekb.learningTime.functionalProgramming.optional;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mockito.Mockito;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.*;
 
 public class OptionalUsages {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(OptionalUsages.class);
 
 	@Test
 	public void shouldShowHowMappingWorks() throws Exception {
@@ -47,7 +47,6 @@ public class OptionalUsages {
 	}
 
 	private Long mapFunction(Long input) {
-		LOGGER.info("mapFunction(" + input + ")");
 		return input + 3;
 	}
 
@@ -100,5 +99,26 @@ public class OptionalUsages {
 
 		// then
 		fail("Should have failed already");
+	}
+
+	@Test
+	public void shouldExplainIfPresentFunction() throws Exception {
+		// given
+		Optional<Long> present = Optional.of(1l);
+		Optional<Long> absent = Optional.<Long>empty();
+		Consumer<Long> consumer = Mockito.mock(Consumer.class);
+
+		// when
+		present.ifPresent(consumer);
+
+		// then
+		then(consumer).should().accept(1l);
+
+		reset(consumer);
+		// when
+		absent.ifPresent(consumer);
+
+		// then
+		then(consumer).should(never()).accept(anyLong());
 	}
 }
