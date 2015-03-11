@@ -9,7 +9,8 @@ import java.util.function.Consumer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.never;
 
 public class OptionalUsages {
 
@@ -34,7 +35,7 @@ public class OptionalUsages {
 	public void shouldExplainMapFunctionOnEmptyOptional() throws Exception {
 		// given
 		Optional<Long> present = Optional.of(1l);
-		Optional<Long> absent = Optional.<Long>empty();
+		Optional<Long> absent = Optional.empty();
 
 		// when
 		Optional<Long> mappedPresent = present.map(this::mapFunction);
@@ -50,7 +51,31 @@ public class OptionalUsages {
 		return input + 3;
 	}
 
-	@Test
+    @Test
+    public void shouldExplainFlatMapFunction() throws Exception {
+        // given
+        Optional<String> valid = Optional.of("123");
+        Optional<String> invalid = Optional.of("abc");
+
+        // when
+        Optional<Long> validNumber = valid.flatMap(this::mapToLong);
+        Optional<Long> invalidNumber = invalid.flatMap(this::mapToLong);
+
+        // then
+        assertThat(validNumber.isPresent()).isTrue();
+        assertThat(validNumber.get()).isEqualTo(123);
+        assertThat(invalidNumber.isPresent()).isFalse();
+    }
+
+    private Optional<Long> mapToLong(String input) {
+        try {
+            return Optional.of(Long.parseLong(input));
+        } catch (NumberFormatException ex) {
+            return Optional.empty();
+        }
+    }
+
+    @Test
 	public void shouldExplainFilterFunction() throws Exception {
 		// given
 		Optional<Long> input = Optional.of(1l);
@@ -66,7 +91,7 @@ public class OptionalUsages {
 	public void shouldExplainOrElseBehaviour() throws Exception {
 		// given
 		Optional<Long> present = Optional.of(1l);
-		Optional<Long> absent = Optional.<Long>empty();
+		Optional<Long> absent = Optional.empty();
 
 		// when
 		Long presentData = present.orElse(null);
@@ -80,7 +105,7 @@ public class OptionalUsages {
 	@Test
 	public void shouldExplainOrElseGetBehaviour() throws Exception {
 		// given
-		Optional<Long> absent = Optional.<Long>empty();
+		Optional<Long> absent = Optional.empty();
 
 		// when
 		Long result = absent.orElseGet(() -> 3l);
@@ -92,7 +117,7 @@ public class OptionalUsages {
 	@Test(expected = IllegalStateException.class)
 	public void shouldExplainOrElseThrowBehaviour() throws Exception {
 		// given
-		Optional<Long> absent = Optional.<Long>empty();
+		Optional<Long> absent = Optional.empty();
 
 		// when
 		absent.orElseThrow(IllegalStateException::new);
@@ -105,7 +130,7 @@ public class OptionalUsages {
 	public void shouldExplainIfPresentFunction() throws Exception {
 		// given
 		Optional<Long> present = Optional.of(1l);
-		Optional<Long> absent = Optional.<Long>empty();
+		Optional<Long> absent = Optional.empty();
 		Consumer<Long> consumer = Mockito.mock(Consumer.class);
 
 		// when
