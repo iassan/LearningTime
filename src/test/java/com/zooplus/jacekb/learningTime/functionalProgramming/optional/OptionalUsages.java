@@ -95,11 +95,11 @@ public class OptionalUsages {
 
 		// when
 		Long presentData = present.orElse(null);
-		Long absentData = absent.orElse(null);
+		Long absentData = absent.orElse(3l);
 
 		// then
 		assertThat(presentData).isNotNull().isEqualTo(1);
-		assertThat(absentData).isNull();
+		assertThat(absentData).isNotNull().isEqualTo(3);
 	}
 
 	@Test
