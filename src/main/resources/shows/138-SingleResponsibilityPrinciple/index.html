@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Slides</title>
+	<link rel="stylesheet" href="reveal.js/css/reveal.css">
+	<link rel="stylesheet" href="reveal.js/css/theme/black.css" id="theme">
+	<link rel="stylesheet" href="reveal.js/lib/css/zenburn.css">
+</head>
+<body>
+<div class="reveal">
+	<div class="slides">
+		<section>Single responsibility principle aka SRP</section>
+		<section>&quot;The SRP is one of the simplest of the principle,<br/>and one of the hardest to get right.&quot;<br/></section>
+		<section>There are two parts of that principle:</section>
+		<section>
+			A class should have a responsibility over only a single concept<br/><br/>
+			<div data-fragment-index="0" class="fragment">AND<br/><br/></div>
+			<div data-fragment-index="1" class="fragment">that responsibility should be entirely encapsulated by the class.</div>
+		</section>
+		<section>In other words:<br/><br/><div data-fragment-index="0" class="fragment">There should never be more than one reason for a class to change.</div></section>
+		<section>Why?</section>
+		<section>Suppose we have a class that is responsible for two concepts, say, preparing a report and formatting it into HTML.</section>
+		<section>
+			When we need to change one of those concepts, for whatever reason, then:
+			<section>we have a more complicated problem to solve, because we need to touch one concept and leave the other untouched (higher estimation)</section>
+			<section>we are more likely to accidentally break the other concept (system fragility)</section>
+			<section>we would need to adapt more tests, because each one is touching both of those concepts (higher estimation, fragile tests)</section>
+		</section>
+		<section>SRP is derived from and closely related to cohesion - a measure of how close two or more concepts belong together.</section>
+		<section>High cohesion also leads to loose coupling, because only very close concepts are kept together, everything else is separated.</section>
+		<section>How this relates to OWQ?</section>
+		<section>
+			OrderReleaser
+			<section>Concept: this unit is only responsible for releasing orders from OWQ to next order processing chain job, yet...</section>
+			<section>
+				knows why the orders are being released:<br/>
+				<pre><code data-trim>public void releaseNeverQueuedOrder(OrderIdDto orderIdDto) {
+  updateJobStateAndTrackReleaseTime(orderIdDto);
+  orderAuditingTracker.trackOrderReleased(orderIdDto,
+      "order immediately released due to no matching queue");
+}</code></pre>
+			</section>
+			<section>
+				knows which tracker to call:<br/>
+				<pre><code data-trim>public void releaseOrder(OrderIdDto orderIdDto) {
+  updateJobStateAndTrackReleaseTime(orderIdDto);
+  orderAuditingTracker.trackOrderReleased(orderIdDto, "");
+}
+
+private void updateJobStateAndTrackReleaseTime(
+                OrderIdDto orderIdDto) {
+  updateJobState(orderIdDto);
+  orderHistoryTracker.trackOrderReleased(orderIdDto);
+}</code></pre>
+			</section>
+		</section>
+		<section>
+			Dequeuer
+			<section>Concept: this unit is only responsible for removing orders from queues, yet...</section>
+			<section>
+				manages transactions:<br/>
+				<pre><code data-trim>@Transactional(propagation = Propagation.MANDATORY)
+public void dequeue(OrderIdDto orderIdDto,
+    QueueIdDto queueIdDto, Reason reason) {</code></pre>
+			</section>
+			<section>
+				knows reasons, why orders are being dequeued:<br/>
+				<pre><code>public enum Reason {
+  MAXIMUM_QUEUE_TIME_EXCEEDED("maximum queueing time exceeded"),
+  QUEUE_EXPIRED("queue expired"),
+  QUEUE_BLOCKING_TIME_ENDED("queue blocking time ended"),
+  ORDER_SPILLED_OVER_FROM_QUEUE("order spilled over from queue"),
+  DEQUEUED_WITH_OWQ_ADMIN(
+    "order has been dequeued with the OWQ admin web application");
+}</code></pre>
+			</section>
+			<section>
+				knows which tracker to call:<br/>
+				<pre><code>public boolean dequeueIfEnqueued(OrderIdDto orderIdDto) {
+  QueuedOrder queuedOrder = queuedOrderRepository.findByOrderId(
+      orderIdDto);
+  if (queuedOrder != null) {
+    QueueIdDto queueIdDto = new QueueIdDto(
+        queuedOrder.getQueueId());
+    queuedOrderRepository.delete(queuedOrder);
+    orderQueueHistoryTracker.trackOrderDequeued(orderIdDto,
+        queueIdDto);
+    orderAuditingTracker.trackOrderDequeued(orderIdDto,
+        queueIdDto,
+        Reason.MAXIMUM_QUEUE_TIME_EXCEEDED.getComment());
+    return true;
+  }
+  return false;
+}</code></pre>
+			</section>
+		</section>
+		<section>But fear not, we can still fix all that!</section>
+		<section>
+			Sources:
+			<ul>
+				<li><a href="http://www.objectmentor.com/resources/articles/srp.pdf">http://www.objectmentor.com/resources/articles/srp.pdf</a></li>
+				<li><a href="http://en.wikipedia.org/wiki/Single_responsibility_principle">http://en.wikipedia.org/wiki/Single_responsibility_principle</a></li>
+				<li><a href="http://en.wikipedia.org/wiki/Cohesion_%28computer_science%29">http://en.wikipedia.org/wiki/Cohesion_(computer_science)</a></li>
+			</ul>
+		</section>
+	</div>
+</div>
+<script src="reveal.js/lib/js/head.min.js"></script>
+<script src="reveal.js/js/reveal.js"></script>
+
+<script>
+	// Required, even if empty.
+	Reveal.initialize({
+		dependencies: [
+			{ src: 'reveal.js/plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } }
+		]
+	});
+</script>
+</body>
+</html>
