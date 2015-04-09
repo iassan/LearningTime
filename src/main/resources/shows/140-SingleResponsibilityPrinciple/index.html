@@ -31,7 +31,7 @@
 			<section>we would need to adapt more tests, because each one is touching both of those concepts (higher estimation, fragile tests)</section>
 		</section>
 		<section>
-			The same applies to the tests:<br/>one test == exactly one behaviour.<br/><br/>
+			The same applies to the tests:<br/>one test == exactly one behaviour.
 			<section>Otherwise:</section>
 			<section>one bug can make many tests red → where's the bug?</section>
 			<section>change to one behaviour forces us to touch many tests</section>
@@ -42,7 +42,7 @@
 			OrderReleaser
 			<section>Concept: this unit is only responsible for releasing orders from OWQ to next order processing chain job, yet...</section>
 			<section>
-				knows why the orders are being released:<br/>
+				knows why the orders are being released:
 				<pre><code data-trim>public void releaseNeverQueuedOrder(OrderIdDto orderIdDto) {
   updateJobStateAndTrackReleaseTime(orderIdDto);
   orderAuditingTracker.trackOrderReleased(orderIdDto,
@@ -50,7 +50,7 @@
 }</code></pre>
 			</section>
 			<section>
-				knows which tracker to call:<br/>
+				knows which tracker to call:
 				<pre><code data-trim>public void releaseOrder(OrderIdDto orderIdDto) {
   updateJobStateAndTrackReleaseTime(orderIdDto);
   orderAuditingTracker.trackOrderReleased(orderIdDto, "");
@@ -67,13 +67,13 @@ private void updateJobStateAndTrackReleaseTime(
 			Dequeuer
 			<section>Concept: this unit is only responsible for removing orders from queues, yet...</section>
 			<section>
-				manages transactions:<br/>
+				manages transactions:
 				<pre><code data-trim>@Transactional(propagation = Propagation.MANDATORY)
 public void dequeue(OrderIdDto orderIdDto,
     QueueIdDto queueIdDto, Reason reason) {</code></pre>
 			</section>
 			<section>
-				knows reasons, why orders are being dequeued:<br/>
+				knows reasons, why orders are being dequeued:
 				<pre><code>public enum Reason {
   MAXIMUM_QUEUE_TIME_EXCEEDED("maximum queueing time exceeded"),
   QUEUE_EXPIRED("queue expired"),
@@ -84,7 +84,7 @@ public void dequeue(OrderIdDto orderIdDto,
 }</code></pre>
 			</section>
 			<section>
-				knows which tracker to call:<br/>
+				knows which tracker to call:
 				<pre><code>public boolean dequeueIfEnqueued(OrderIdDto orderIdDto) {
   QueuedOrder queuedOrder = queuedOrderRepository.findByOrderId(
       orderIdDto);
