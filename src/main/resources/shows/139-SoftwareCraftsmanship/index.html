@@ -10,14 +10,71 @@
 <body>
 <div class="reveal">
 	<div class="slides">
-		<section></section>
+		<section>Software Craftsmanship</section>
+		<section>My personal goal: make you want to become software craftsmen (craftswomen)</section>
+		<section>
+			Anti-examples (telecommunication):
+			<section><img src="Bejrut1.jpg" style="border: 0;"/></section>
+			<section><img src="Bejrut2.jpg" style="border: 0;"/></section>
+			<section><img src="Bejrut3.jpg" style="border: 0;"/></section>
+			<aside class="notes">Well, it works, but any requirement to change or fix an issue starts a horror</aside>
+		</section>
+		<section>
+			Definitions<br/>
+			<section>British dictionary: a member of a skilled trade; someone who practises a craft; artisan</section>
+			<section>dictionary.com: a person who practices or is highly skilled in a craft; artisan</section>
+			<section>Macmillan dictionary: the skill involved in making something beautiful or practical using your hands; the beautiful or impressive quality of something that has been made using a lot of skill</section>
+			<section>The focus is always on skill and quality</section>
+		</section>
+		<section>
+			Positive examples (once again networking):
+			<section><img src="chaos1.jpg" style="max-width: 40%;border: 0"/><img src="order1.jpg" style="max-width: 40%;border: 0"/></section>
+			<section><img src="chaos2.jpg" style="max-width: 40%;border: 0"/><img src="order2.jpg" style="max-width: 40%;border: 0"/></section>
+			<section><img src="chaos3.jpg" style="max-width: 40%;border: 0"/><img src="order3.jpg" style="max-width: 40%;border: 0"/></section>
+		</section>
+		<section>
+			Some history
+			<section>Craftsmanship originates from mid XIV century</section>
+			<section>Craftsmen joined together to form craft guilds</section>
+			<section>You couldn't do your craft, unless you were a member of a guild</section>
+			<section>
+				To become a member of a guild, one had to go through 3 stages:
+				<div data-fragment-index="0" class="fragment">apprentice - lasted 5-9 years, not paid</div>
+				<div data-fragment-index="1" class="fragment">journeyman - learnt his skill, being paid, but not master yet</div>
+				<div data-fragment-index="2" class="fragment">master - presented his "masterpiece" built in free time and was accepted</div>
+			</section>
+		</section>
+		<section>
+			Software craftsmanship manifesto
+			<section>Can be seen as an extension to agile manifesto</section>
+			<section>
+				Agile: Individuals and interactions over processes and tools
+				<div data-fragment-index="1" class="fragment">Craftsmen: Not only individuals and interactions, but also a community of professionals</div>
+				<div data-fragment-index="2" class="fragment">Meetups, software conferences, go out, learn and teach, discuss</div>
+			</section>
+			<section>
+				Agile: Working software over comprehensive documentation
+				<div data-fragment-index="1" class="fragment">Craftsmen: Not only working software, but also well-crafted software</div>
+				<div data-fragment-index="2" class="fragment">Create maintenable software, something that we will be able easily extend and change in the future</div>
+				<div data-fragment-index="3" class="fragment">Remember: always code as if the person who ends up maintaining your code is a violent psychopath who knows where you live.</div>
+			</section>
+			<section>
+				Agile: Customer collaboration over contract negotiation
+				<div data-fragment-index="1" class="fragment">Craftsmen: Not only customer collaboration, but also productive partnerships</div>
+				<div data-fragment-index="2" class="fragment">Propose something on our own, like simulation environment for Alex regaring parcel routing</div>
+			</section>
+			<section>
+				Agile: Responding to change over following a plan
+				<div data-fragment-index="1" class="fragment">Craftsmen: Not only responding to change, but also steadily adding value</div>
+				<div data-fragment-index="2" class="fragment">Be proactive, automate adding new FCs or add all countries to logistics interface before it would hurt you again</div>
+			</section>
+		</section>
 	</div>
 </div>
 <script src="../../reveal.js/lib/js/head.min.js"></script>
 <script src="../../reveal.js/js/reveal.js"></script>
 
 <script>
-	// Required, even if empty.
 	Reveal.initialize({
 		dependencies: [
 			{ src: 'reveal.js/plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } }
