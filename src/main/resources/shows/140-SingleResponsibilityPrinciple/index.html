@@ -24,17 +24,25 @@
 		<section>Why?</section>
 		<section>Suppose we have a class that is responsible for two concepts, say, preparing a report and formatting it into HTML.</section>
 		<section>
-			When we need to change one of those concepts, for whatever reason, then:
+			When we need to change one of those concepts, for whatever reason,
+			<section>then:</section>
 			<section>we have a more complicated problem to solve, because we need to touch one concept and leave the other untouched (higher estimation)</section>
 			<section>we are more likely to accidentally break the other concept (system fragility)</section>
 			<section>we would need to adapt more tests, because each one is touching both of those concepts (higher estimation, fragile tests)</section>
+		</section>
+		<section>
+			The same applies to the tests:<br/>one test == exactly one behaviour.
+			<section>Otherwise:</section>
+			<section>one bug can make many tests red → where's the bug?</section>
+			<section>change to one behaviour forces us to touch many tests</section>
+			<section>verifying the same thing many times doesn't bring any value, because this behaviour is covered by some other test (DRY)</section>
 		</section>
 		<section>How this relates to OWQ?</section>
 		<section>
 			OrderReleaser
 			<section>Concept: this unit is only responsible for releasing orders from OWQ to next order processing chain job, yet...</section>
 			<section>
-				knows why the orders are being released:<br/>
+				knows why the orders are being released:
 				<pre><code data-trim>public void releaseNeverQueuedOrder(OrderIdDto orderIdDto) {
   updateJobStateAndTrackReleaseTime(orderIdDto);
   orderAuditingTracker.trackOrderReleased(orderIdDto,
@@ -42,7 +50,7 @@
 }</code></pre>
 			</section>
 			<section>
-				knows which tracker to call:<br/>
+				knows which tracker to call:
 				<pre><code data-trim>public void releaseOrder(OrderIdDto orderIdDto) {
   updateJobStateAndTrackReleaseTime(orderIdDto);
   orderAuditingTracker.trackOrderReleased(orderIdDto, "");
@@ -59,13 +67,13 @@ private void updateJobStateAndTrackReleaseTime(
 			Dequeuer
 			<section>Concept: this unit is only responsible for removing orders from queues, yet...</section>
 			<section>
-				manages transactions:<br/>
+				manages transactions:
 				<pre><code data-trim>@Transactional(propagation = Propagation.MANDATORY)
 public void dequeue(OrderIdDto orderIdDto,
     QueueIdDto queueIdDto, Reason reason) {</code></pre>
 			</section>
 			<section>
-				knows reasons, why orders are being dequeued:<br/>
+				knows reasons, why orders are being dequeued:
 				<pre><code>public enum Reason {
   MAXIMUM_QUEUE_TIME_EXCEEDED("maximum queueing time exceeded"),
   QUEUE_EXPIRED("queue expired"),
@@ -76,7 +84,7 @@ public void dequeue(OrderIdDto orderIdDto,
 }</code></pre>
 			</section>
 			<section>
-				knows which tracker to call:<br/>
+				knows which tracker to call:
 				<pre><code>public boolean dequeueIfEnqueued(OrderIdDto orderIdDto) {
   QueuedOrder queuedOrder = queuedOrderRepository.findByOrderId(
       orderIdDto);
@@ -102,6 +110,7 @@ public void dequeue(OrderIdDto orderIdDto,
 				<li><a href="http://www.objectmentor.com/resources/articles/srp.pdf">http://www.objectmentor.com/resources/articles/srp.pdf</a></li>
 				<li><a href="http://en.wikipedia.org/wiki/Single_responsibility_principle">http://en.wikipedia.org/wiki/Single_responsibility_principle</a></li>
 				<li><a href="http://en.wikipedia.org/wiki/Cohesion_%28computer_science%29">http://en.wikipedia.org/wiki/Cohesion_(computer_science)</a></li>
+				<li><a href="http://blog.stevensanderson.com/2009/08/24/writing-great-unit-tests-best-and-worst-practises/">http://blog.stevensanderson.com/2009/08/24/writing-great-unit-tests-best-and-worst-practises/</a></li>
 			</ul>
 		</section>
 	</div>
@@ -113,7 +122,7 @@ public void dequeue(OrderIdDto orderIdDto,
 	// Required, even if empty.
 	Reveal.initialize({
 		dependencies: [
-			{ src: 'reveal.js/plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } }
+			{ src: '../../reveal.js/plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } }
 		]
 	});
 </script>
