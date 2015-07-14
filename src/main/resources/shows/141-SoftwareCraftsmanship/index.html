@@ -8,29 +8,45 @@
 	<link rel="stylesheet" href="../../reveal.js/lib/css/zenburn.css">
 </head>
 <body>
-<div class="reveal">
-	<div class="slides">
+<section class="reveal">
+	<section class="slides">
 		<section>Software Craftsmanship</section>
 		<section>My personal goal: make you want to become software craftsmen (craftswomen)</section>
 		<section>
-			Anti-examples (telecommunication):
-			<section><img src="Bejrut1.jpg" style="border: 0;"/></section>
-			<section><img src="Bejrut2.jpg" style="border: 0;"/></section>
-			<section><img src="Bejrut3.jpg" style="border: 0;"/></section>
-			<aside class="notes">Well, it works, but any requirement to change or fix an issue starts a horror</aside>
-		</section>
+            <section>Agile revolution changed processes, shortened feedback loop, encouraged collaboration between developers and business.</section>
+            <section>Agile hangover: after a few years of adopting agile companies realized, that the quality of software is still low.</section>
+            <section>There's one extremely important thing missing: "tech", "tech"nology, "tech"nical skills, "tech"niques.</section>
+        </section>
+        <section>
+            Anti-examples (telecommunication):
+            <section><img src="Bejrut1.jpg" style="border: 0;"/></section>
+            <section><img src="Bejrut2.jpg" style="border: 0;"/></section>
+            <section><img src="Bejrut3.jpg" style="border: 0;"/></section>
+            <aside class="notes">Well, it works, but any requirement to change or fix an issue starts a horror</aside>
+        </section>
+        <section>
+            Software craftsmanship is about being a professional:
+            <section>taking responsibility for everything we do,</section>
+            <section>being passionate about what we do, it's not <i>just</i> a job</section>
+            <section>taking care about applications, not merely delivering them,</section>
+            <section>constantly learning to be able to solve problems using best techniques and tools (katas, pet projects, books, meetups, XP),</section>
+            <section>teaching others, helping them become better developers,</section>
+            <section>we're being perceived as experts and we should behave like ones (by saying "no" if necessary),</section>
+            <section>not only code, but also business collaboration, DevOps, testing, documentation, good estimations, interviews, driving topics, /etc.,</section>
+            <section>being proud of your work.</section>
+        </section>
+        <section>
+            Positive examples (once again networking):
+            <section><img src="chaos1.jpg" style="max-width: 40%;border: 0"/><img src="order1.jpg" style="max-width: 40%;border: 0"/></section>
+            <section><img src="chaos2.jpg" style="max-width: 40%;border: 0"/><img src="order2.jpg" style="max-width: 40%;border: 0"/></section>
+            <section><img src="chaos3.jpg" style="max-width: 40%;border: 0"/><img src="order3.jpg" style="max-width: 40%;border: 0"/></section>
+        </section>
 		<section>
 			Definitions<br/>
 			<section>British dictionary: a member of a skilled trade; someone who practises a craft; artisan</section>
 			<section>dictionary.com: a person who practices or is highly skilled in a craft; artisan</section>
 			<section>Macmillan dictionary: the skill involved in making something beautiful or practical using your hands; the beautiful or impressive quality of something that has been made using a lot of skill</section>
 			<section>The focus is always on skill and quality</section>
-		</section>
-		<section>
-			Positive examples (once again networking):
-			<section><img src="chaos1.jpg" style="max-width: 40%;border: 0"/><img src="order1.jpg" style="max-width: 40%;border: 0"/></section>
-			<section><img src="chaos2.jpg" style="max-width: 40%;border: 0"/><img src="order2.jpg" style="max-width: 40%;border: 0"/></section>
-			<section><img src="chaos3.jpg" style="max-width: 40%;border: 0"/><img src="order3.jpg" style="max-width: 40%;border: 0"/></section>
 		</section>
 		<section>
 			Some history
@@ -46,7 +62,7 @@
 		</section>
 		<section>
 			Software craftsmanship manifesto
-			<section>Can be seen as an extension to agile manifesto</section>
+			<section>It's an extension to agile manifesto</section>
 			<section>
 				Agile: Individuals and interactions over processes and tools
 				<div data-fragment-index="1" class="fragment">Craftsmen: Not only individuals and interactions, but also a community of professionals</div>
@@ -55,20 +71,29 @@
 			<section>
 				Agile: Working software over comprehensive documentation
 				<div data-fragment-index="1" class="fragment">Craftsmen: Not only working software, but also well-crafted software</div>
-				<div data-fragment-index="2" class="fragment">Create maintenable software, something that we will be able easily extend and change in the future</div>
-				<div data-fragment-index="3" class="fragment">Remember: always code as if the person who ends up maintaining your code is a violent psychopath who knows where you live.</div>
+				<div data-fragment-index="2" class="fragment">Create maintainable software, something that we will be able easily extend and change in the future.</div>
+                <div data-fragment-index="3" class="fragment">Keep your code clean enough, so that estimation of adding the same feature does not depend on whether we're just starting a project or is it a last thing to do.</div>
+                <div data-fragment-index="4" class="fragment">Majority of costs related to software project is spent on it's maintenance, not development. Going cheap in development makes TCO higher.</div>
+				<div data-fragment-index="5" class="fragment">Remember: always code as if the person who ends up maintaining your code is a violent psychopath who knows where you live.</div>
 			</section>
 			<section>
 				Agile: Customer collaboration over contract negotiation
 				<div data-fragment-index="1" class="fragment">Craftsmen: Not only customer collaboration, but also productive partnerships</div>
 				<div data-fragment-index="2" class="fragment">Propose something on our own, like simulation environment for Alex regaring parcel routing</div>
 			</section>
-			<section>
-				Agile: Responding to change over following a plan
-				<div data-fragment-index="1" class="fragment">Craftsmen: Not only responding to change, but also steadily adding value</div>
-				<div data-fragment-index="2" class="fragment">Be proactive, automate adding new FCs or add all countries to logistics interface before it would hurt you again</div>
-			</section>
+            <section>
+                Agile: Responding to change over following a plan
+                <div data-fragment-index="1" class="fragment">Craftsmen: Not only responding to change, but also steadily adding value</div>
+                <div data-fragment-index="2" class="fragment">Be proactive, automate adding new FCs or add all countries to logistics interface before it would hurt you again</div>
+            </section>
+            <section>
+                Agile (proposal by Uncle Bob): Craftsmanship over crap (craftsmanship over execution)
+                <div data-fragment-index="1" class="fragment">Most software development teams execute, but they don’t take care. We value execution, but we value craftsmanship more.</div>
+            </section>
 		</section>
+        <section>
+            How can I help?
+        </section>
 	</div>
 </div>
 <script src="../../reveal.js/lib/js/head.min.js"></script>
