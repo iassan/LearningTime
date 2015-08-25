@@ -6,6 +6,14 @@
 	<link rel="stylesheet" href="../../reveal.js/css/reveal.css">
 	<link rel="stylesheet" href="../../reveal.js/css/theme/black.css" id="theme">
 	<link rel="stylesheet" href="../../reveal.js/lib/css/zenburn.css">
+    <!-- printing and PDF export -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
 </head>
 <body>
 <div class="reveal">
