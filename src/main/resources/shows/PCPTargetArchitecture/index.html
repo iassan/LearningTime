@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>PCP Target Architecture</title>
+    <link rel="stylesheet" href="../../reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="../../reveal.js/css/theme/black.css" id="theme">
+    <link rel="stylesheet" href="../../reveal.js/lib/css/zenburn.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>PCP Target Architecture</section>
+        <section data-background="mordor2.jpg">Current issues
+            <section><img src="issues.jpg" style="border: 0;"/></section>
+            <section>feature transparency<br/>
+                <ul>
+                    <li>no tests for PB (in progress)</li>
+                    <li>lack of feature transparency</li>
+                    <li>features inside PB not visible or even known</li>
+                </ul>
+            </section>
+            <section>code quality<br/>
+                <ul>
+                    <li>code quality & coverage</li>
+                    <li>PB extremely difficult to change</li>
+                </ul>
+            </section>
+            <section>resilience<br/>
+                <ul>
+                    <li>single order blocking</li>
+                    <li>error handling</li>
+                </ul>
+            </section>
+            <section>stress testing</section>
+            <section>monitoring<br/>
+                <ul>
+                    <li>lack of business monitoring, it happened a few times, that Alex didn't know what was going on</li>
+                    <li>process transparency/availability</li>
+                    <li>cannot track single orders inside the chain</li>
+                </ul>
+            </section>
+            <section>does not fully utilize network possibilities, see Clever Cut restrictions</section>
+            <section>parallelism<br/>
+                <ul>
+                    <li>multi thread</li>
+                </ul>
+            </section>
+            <section>benchmarking<br/>
+                <ul>
+                    <li>A/B testing</li>
+                </ul>
+            </section>
+            <section>latency (system performance)<br/>
+                <ul>
+                    <li>time to export</li>
+                    <li>not event based</li>
+                    <li>no easy orchestration of the chain</li>
+                </ul>
+            </section>
+            <section>performance (application)<br/>
+                <ul>
+                    <li>scaling</li>
+                </ul>
+            </section>
+            <section>missing products?<br/>
+                <ul>
+                    <li>DSP delivery process</li>
+                    <li>DSP monitoring (PCF?)</li>
+                    <li>expected delivery date (PCF?)</li>
+                    <li>restriction matrix</li>
+                    <li>logic related to DSP/FC restrictions spread around different applications</li>
+                </ul>
+            </section>
+            <section>new functions support<br/>
+                <ul>
+                    <li>time slot deliveries support</li>
+                    <li>next day delivery support</li>
+                    <li>shop customer information (time to deliver, parcels)</li>
+                </ul>
+            </section>
+            <section>FC onboarding pain</section>
+            <section>technical debt/legcay<br/>
+                <ul>
+                    <li>tight DB integration</li>
+                    <li>outdated libraries</li>
+                    <li>shared code base</li>
+                    <li>dependency to thezoo/zooman</li>
+                </ul>
+            </section>
+            <section>data ownership<br/>
+                <ul>
+                    <li>costs - PCC and CMC</li>
+                    <li>missing central cost application for logistics related (maybe with overriding possibilities)</li>
+                    <li>multiple variants of the same costs (capacity costs model)</li>
+                    <li>costs overriding in end applications</li>
+                    <li>owner of shipping costs admin</li>
+                </ul>
+            </section>
+            <section>logic fragmentation (tech/biz)<br/>
+                <ul>
+                    <li>free gifts/promotions/supplemental articles</li>
+                    <li>process ordering</li>
+                    <li>purely technical applications (orderChainProcessorInit)</li>
+                    <li>Some features that belong to PB implemented outside, mainly SQL scripts, but also OFP and all the others</li>
+                    <li>business logic in SQL and shell scripts</li>
+                </ul>
+            </section>
+            <section>team scaling</section>
+        </section>
+
+        <section>Ideas how to improve the situation
+            <section><img src="ideas.jpg" style="border: 0;"/></section>
+            <section>modularization<br/>
+                <ul>
+                    <li>data ownership
+                        <ul>
+                            <li>move our data into our DB, whatever it would be</li>
+                            <li>completely detach from ZOOMAN, if necessary (for stuff like FC or DSP data) use some REST gateway</li>
+                        </ul>
+                    </li>
+                    <li>make PCC/OCC a microservice</li>
+                    <li>use microservices instead of shared code</li>
+                    <li>make PCP (with an exception for PCC) one big app</li>
+                    <li>Pull all PCP related logic into PCP and implement it in Java, with tests of course</li>
+                    <li>move all admins inside and reimplement them using ExtJS</li>
+                </ul>
+            </section>
+            <section><strike>thezoo</strike><br/>
+                <ul>
+                    <li>Completely detach from thezoo, no exceptions</li>
+                    <li>get rid of thezoo code base</li>
+                    <li>use new libs for old jobs</li>
+                    <li>integrate marketing promotions (free gifts, supplements) properly into PCP/PB</li>
+                </ul>
+            </section>
+            <section>self healing/resilience</section>
+            <section>code quality<br/>
+                <ul>
+                    <li>clearly separate features in the code</li>
+                    <li>make code S.O.L.I.D.</li>
+                    <li>cleanup dead code/jobs</li>
+                </ul>
+            </section>
+            <section>business monitoring<br/>
+                <ul>
+                    <li>have a business transparent PCP: biz being aware why routing decisions are taken, i.e. via monitoring,
+                        logging
+                    </li>
+                    <li>build a complete monitoring solution, that would enable Supply Chain and Transportation teams to see and
+                        analyse data and take better decisions
+                    </li>
+                    <li>implement a feature benchmark for PCP</li>
+                    <li>transaction drill down</li>
+                    <li>monitor my applications</li>
+                    <li>have a proper business error (incidents) handling with clear responsibilities</li>
+                </ul>
+            </section>
+            <section>transparency<br/>
+                <ul>
+                    <li>have a complete feature test coverage for PB/PCP</li>
+                    <li>make all features visible, as a living documentation</li>
+                    <li>full requirements of PB</li>
+                </ul>
+            </section>
+            <section>event based<br/>
+                <ul>
+                    <li>even based, no start/stop apps</li>
+                    <li>make PCP talk internally with events</li>
+                    <li>event based orchestration</li>
+                    <li>get rid of spring batch (where it doesn't make sense)</li>
+                </ul>
+            </section>
+            <section>make new FC setup just a matter of configuration</section>
+            <section>deployment<br/>
+                <ul>
+                    <li>deploy my applications</li>
+                    <li>deliver PCP in CD mode</li>
+                </ul>
+            </section>
+            <section>have a way to do a global usage search for shared stuff (zooman, thezoo) - visualize dependencies</section>
+            <section>scalability<br/>
+                <ul>
+                    <li>go functional: pure methods, easy parallelism, immutable data</li>
+                    <li>go parallel PB: in and out</li>
+                    <li>elasticity of PCP</li>
+                    <li>implement a performance benchmarking for PB/PCP</li>
+                    <li>make PB parallelizable</li>
+                    <li>go parallel!</li>
+                    <li>stabilization of PB (performance)</li>
+                </ul>
+            </section>
+            <section>product management<br/>
+                <ul>
+                    <li>central stock management application</li>
+                    <li>integrate DSP delivery process into PCF</li>
+                    <li>new PDC Operations product: Restriction Matrix</li>
+                    <li>have a centralized logistics costs product/app which also allows for overriding</li>
+                    <li>clear app/product and scope: functionality, interface, data</li>
+                </ul>
+            </section>
+        </section>
+
+        <section>Target integration view
+            <img src="integration_view.jpg" style="border: 0;">
+        </section>
+
+        <section>Target internal system view
+            <img src="internal_system_view.jpg" style="border: 0;">
+        </section>
+
+        <section>Technical development roadmap
+            <section data-background="m1.jpg">Milestone 1<br/>
+                <ul>
+                    <li>Make features visible</li>
+                    <li>Test all features</li>
+                </ul>
+            </section>
+
+            <section data-background="m2.jpg">Milestone 2<br/>
+                <ul>
+                    <li>Clean up the code and make it functional</li>
+                    <li>Cut the code into clearly separated modules</li>
+                    <li>Define resilience mechanism</li>
+                    <li>Monitoring, both business and technical</li>
+                    <li>Running inside container</li>
+                    <li>Continuous Delivery</li>
+                </ul>
+            </section>
+
+            <section data-background="m3.jpg">Milestone 3<br/>
+                <ul>
+                    <li>Scala proof of concept</li>
+                    <li>PCC Microservice</li>
+                </ul>
+            </section>
+
+            <section data-background="m4.jpg">Milestone 4<br/>
+                <ul>
+                    <li>Remodel the process (depends on business requirements)</li>
+                    <li>Bring all applications into one executable</li>
+                    <li>Move functions outside of JVM into main codebase</li>
+                </ul>
+            </section>
+
+            <section data-background="m5.jpg">Milestone 5<br/>
+                <ul>
+                    <li>Input proxy service</li>
+                    <li>Stock service proxy</li>
+                    <li>Multiprocessing</li>
+                </ul>
+            </section>
+
+            <section data-background="m6.jpg">Milestone 6<br/>
+                <ul>
+                    <li>Order Management Service</li>
+                    <li>Restriction Matrix Service</li>
+                    <li>Network Capacity Service</li>
+                    <li>Article Service</li>
+                </ul>
+            </section>
+
+            <section data-background="m7.jpg">Milestone 7<br/>
+                <ul>
+                    <li>Multithreading (non-Akka)</li>
+                    <li>Multithreading (Akka)</li>
+                </ul>
+            </section>
+
+            <section data-background="m8.jpg">Milestone 8<br/>
+                <ul>
+                    <li>Output proxy service</li>
+                </ul>
+            </section>
+        </section>
+    </div>
+</div>
+<script src="../../reveal.js/lib/js/head.min.js"></script>
+<script src="../../reveal.js/js/reveal.js"></script>
+
+<script>
+	Reveal.initialize({
+		dependencies: [
+			{ src: 'reveal.js/plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } }
+		]
+	});
+
+</script>
+</body>
+</html>
