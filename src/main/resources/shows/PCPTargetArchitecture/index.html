@@ -11,7 +11,7 @@
 <div class="reveal">
     <div class="slides">
         <section>PCP Target Architecture</section>
-        <section data-background="mordor2.jpg">Current issues
+        <section data-background="mordor.jpg">Current issues
             <section><img src="issues.jpg" style="border: 0;"/></section>
             <section>feature transparency<br/>
                 <ul>
@@ -109,37 +109,17 @@
             <section>team scaling</section>
         </section>
 
+        <section>Business process view
+            <img src="business_view.jpeg" style="border: 0;"/>
+        </section>
+
         <section>Ideas how to improve the situation
             <section><img src="ideas.jpg" style="border: 0;"/></section>
-            <section>modularization<br/>
+            <section>transparency<br/>
                 <ul>
-                    <li>data ownership
-                        <ul>
-                            <li>move our data into our DB, whatever it would be</li>
-                            <li>completely detach from ZOOMAN, if necessary (for stuff like FC or DSP data) use some REST gateway</li>
-                        </ul>
-                    </li>
-                    <li>make PCC/OCC a microservice</li>
-                    <li>use microservices instead of shared code</li>
-                    <li>make PCP (with an exception for PCC) one big app</li>
-                    <li>Pull all PCP related logic into PCP and implement it in Java, with tests of course</li>
-                    <li>move all admins inside and reimplement them using ExtJS</li>
-                </ul>
-            </section>
-            <section><strike>thezoo</strike><br/>
-                <ul>
-                    <li>Completely detach from thezoo, no exceptions</li>
-                    <li>get rid of thezoo code base</li>
-                    <li>use new libs for old jobs</li>
-                    <li>integrate marketing promotions (free gifts, supplements) properly into PCP/PB</li>
-                </ul>
-            </section>
-            <section>self healing/resilience</section>
-            <section>code quality<br/>
-                <ul>
-                    <li>clearly separate features in the code</li>
-                    <li>make code S.O.L.I.D.</li>
-                    <li>cleanup dead code/jobs</li>
+                    <li>have a complete feature test coverage for PB/PCP</li>
+                    <li>make all features visible, as a living documentation</li>
+                    <li>full requirements of PB</li>
                 </ul>
             </section>
             <section>business monitoring<br/>
@@ -156,29 +136,8 @@
                     <li>have a proper business error (incidents) handling with clear responsibilities</li>
                 </ul>
             </section>
-            <section>transparency<br/>
-                <ul>
-                    <li>have a complete feature test coverage for PB/PCP</li>
-                    <li>make all features visible, as a living documentation</li>
-                    <li>full requirements of PB</li>
-                </ul>
-            </section>
-            <section>event based<br/>
-                <ul>
-                    <li>even based, no start/stop apps</li>
-                    <li>make PCP talk internally with events</li>
-                    <li>event based orchestration</li>
-                    <li>get rid of spring batch (where it doesn't make sense)</li>
-                </ul>
-            </section>
             <section>make new FC setup just a matter of configuration</section>
-            <section>deployment<br/>
-                <ul>
-                    <li>deploy my applications</li>
-                    <li>deliver PCP in CD mode</li>
-                </ul>
-            </section>
-            <section>have a way to do a global usage search for shared stuff (zooman, thezoo) - visualize dependencies</section>
+            <section>self healing/resilience</section>
             <section>scalability<br/>
                 <ul>
                     <li>go functional: pure methods, easy parallelism, immutable data</li>
@@ -190,6 +149,13 @@
                     <li>stabilization of PB (performance)</li>
                 </ul>
             </section>
+            <section>deployment<br/>
+                <ul>
+                    <li>deploy my applications</li>
+                    <li>deliver PCP in CD mode</li>
+                </ul>
+            </section>
+            <section>visualize dependencies - have a way to do a global usage search for shared stuff (zooman, thezoo)</section>
             <section>product management<br/>
                 <ul>
                     <li>central stock management application</li>
@@ -199,14 +165,52 @@
                     <li>clear app/product and scope: functionality, interface, data</li>
                 </ul>
             </section>
+            <section>modularization<br/>
+                <ul>
+                    <li>data ownership
+                        <ul>
+                            <li>move our data into our DB, whatever it would be</li>
+                            <li>completely detach from ZOOMAN, if necessary (for stuff like FC or DSP data) use some REST gateway</li>
+                        </ul>
+                    </li>
+                    <li>make PCC/OCC a microservice</li>
+                    <li>use microservices instead of shared code</li>
+                    <li>make PCP (with an exception for PCC) one big app</li>
+                    <li>Pull all PCP related logic into PCP and implement it in Java, with tests of course</li>
+                    <li>move all admins inside and reimplement them using ExtJS</li>
+                </ul>
+            </section>
+            <section>code quality<br/>
+                <ul>
+                    <li>clearly separate features in the code</li>
+                    <li>make code S.O.L.I.D.</li>
+                    <li>cleanup dead code/jobs</li>
+                </ul>
+            </section>
+            <section><strike>thezoo</strike><br/>
+                <ul>
+                    <li>Completely detach from thezoo, no exceptions</li>
+                    <li>get rid of thezoo code base</li>
+                    <li>use new libs for old jobs</li>
+                    <li>integrate marketing promotions (free gifts, supplements) properly into PCP/PB</li>
+                </ul>
+            </section>
+            <section>event based<br/>
+                <ul>
+                    <li>even based, no start/stop apps</li>
+                    <li>make PCP talk internally with events</li>
+                    <li>event based orchestration</li>
+                    <li>get rid of spring batch (where it doesn't make sense)</li>
+                </ul>
+            </section>
         </section>
 
         <section>Target integration view
-            <img src="integration_view.jpg" style="border: 0;">
+            <img src="integration_view.svg" style="border: 0;"/>
         </section>
 
         <section>Target internal system view
-            <img src="internal_system_view.jpg" style="border: 0;">
+            <img src="internal_system_view.svg" style="border: 0;"/>
         </section>
 
         <section>Technical development roadmap
@@ -272,6 +276,32 @@
                     <li>Output proxy service</li>
                 </ul>
             </section>
+        </section>
+
+        <section>TODOs<br/>
+            <ul>
+                <li>Non-functional requirements
+                    <ul>
+                        <li>performance</li>
+                        <li>monitoring</li>
+                        <li>logging</li>
+                        <li>security</li>
+                        <li>deployment and execution</li>
+                        <li>data transparency</li>
+                        <li>general transparency</li>
+                        <li>...</li>
+                    </ul>
+                </li>
+                <li>other ideas</li>
+            </ul>
+        </section>
+
+        <section>Further information:<br/><ul>
+            <li>https://wiki.web.zooplus.de/display/AM/Parcel+Processing+Target+Architecture</li>
+            <li>jacek.bilski@zooplus.com</li>
+            <li>tahi.walcher@zooplus.com</li>
+            <li>florin.zalum@zooplus.com</li>
+        </ul>
         </section>
     </div>
 </div>
