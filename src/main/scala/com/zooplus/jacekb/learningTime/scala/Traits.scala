@@ -12,7 +12,7 @@ object Traits {
 		C.b()
 	}
 
-	class A {
+	trait A {
 		def a() {
 			println("a")
 		}
